@@ -284,3 +284,731 @@ p {
   font-family: var(--schrift-vast);
   letter-spacing: 0.1em;
 }
+
+/* ═════════════════════════════════════════════════════════════
+   HET SPEELSCHERM
+   ═════════════════════════════════════════════════════════════ */
+
+.speelscherm {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: var(--veilig-boven);
+}
+
+.balk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--rand-zacht);
+  background: var(--vlak-diep);
+  flex: none;
+}
+
+.balk .knop {
+  padding: 8px 12px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.balkmidden {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.balkmidden .stempel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.meter {
+  width: 100%;
+  max-width: 260px;
+  height: 2px;
+  background: var(--rand-zacht);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.metervulling {
+  height: 100%;
+  background: var(--amber);
+  transition: width 0.4s ease;
+}
+
+/* ── Tabbladen (alleen op smalle schermen zichtbaar) ────────── */
+
+.tabs {
+  display: flex;
+  flex: none;
+  border-bottom: 1px solid var(--rand-zacht);
+  background: var(--vlak-diep);
+}
+
+.tab {
+  flex: 1;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--tekst-flauw);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 8px;
+  cursor: pointer;
+}
+
+.tab.aan {
+  color: var(--tekst);
+  border-bottom-color: var(--amber);
+}
+
+.teller {
+  display: inline-block;
+  margin-left: 6px;
+  background: var(--amber-donker);
+  color: var(--amber);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 11px;
+}
+
+/* ── De twee kolommen ───────────────────────────────────────── */
+
+.panelen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.kolom {
+  display: none;
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kolom.aan {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .tabs {
+    display: none;
+  }
+  .kolom {
+    display: block;
+  }
+  .kolom + .kolom {
+    border-left: 1px solid var(--rand-zacht);
+  }
+}
+
+.paneel {
+  padding: 14px 16px calc(var(--veilig-onder) + 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.paneelkop {
+  font-family: var(--schrift-vast);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tekst-zacht);
+  margin: 0;
+}
+
+.paneelvoet {
+  font-size: 12px;
+  color: var(--tekst-flauw);
+  margin: 0;
+}
+
+.paneelvoet.boven {
+  margin-top: -6px;
+}
+
+.terug {
+  align-self: flex-start;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.leeg {
+  color: var(--tekst-flauw);
+  font-size: 14px;
+  padding: 24px 0;
+}
+
+/* ── Het appraster ──────────────────────────────────────────── */
+
+.appraster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+}
+
+.appknop {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  background: var(--vlak);
+  border: 1px solid var(--rand-zacht);
+  border-radius: var(--straal);
+  color: var(--tekst);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.appknop:hover {
+  background: var(--vlak-hoog);
+  border-color: var(--rand);
+}
+
+.apppictogram {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.appnaam {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ── Lijsten (gesprekken en stukken) ────────────────────────── */
+
+.lijst {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lijstregel {
+  appearance: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--straal-klein);
+  color: var(--tekst);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lijstregel:hover {
+  background: var(--vlak);
+}
+
+.rondje {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--vlak-hoog);
+  border: 1px solid var(--rand-zacht);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tekst-zacht);
+}
+
+.rondje.nieuw {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.lijsttekst {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.lijsttitel {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.lijstregeltje {
+  font-size: 13px;
+  color: var(--tekst-flauw);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stip {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.vinkje {
+  flex: none;
+  color: var(--groen);
+  font-size: 14px;
+}
+
+/* ── Een gesprek ────────────────────────────────────────────── */
+
+.gesprekskop {
+  color: var(--tekst);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 17px;
+}
+
+.berichten {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.datumkop {
+  text-align: center;
+  font-family: var(--schrift-vast);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tekst-flauw);
+  margin: 18px 0 8px;
+}
+
+.bel-rij {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.bel-rij.van-mij {
+  justify-content: flex-end;
+}
+
+.bel {
+  max-width: 82%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  background: var(--vlak);
+  border: 1px solid var(--rand-zacht);
+  font-size: 15px;
+}
+
+.bel.mijn {
+  background: #1e3040;
+  border-color: #2b4457;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 4px;
+}
+
+.bel.hersteld {
+  border-style: dashed;
+  border-color: var(--rood-donker);
+}
+
+.bel.markeerbaar {
+  border-color: var(--amber-donker);
+}
+
+.bel.gemarkeerd {
+  border-color: var(--groen-donker);
+}
+
+.afzender {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tekst-zacht);
+}
+
+.hersteld-label {
+  font-family: var(--schrift-vast);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rood);
+}
+
+.beltekst {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.beltijd {
+  align-self: flex-end;
+  font-size: 10px;
+  color: var(--tekst-flauw);
+  font-family: var(--schrift-vast);
+}
+
+.markeer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin: 4px 0 10px;
+  padding: 8px 12px;
+  background: transparent;
+  border-color: var(--amber-donker);
+  color: var(--amber);
+  font-size: 13px;
+}
+
+.markeer:hover {
+  background: rgba(230, 169, 76, 0.08);
+}
+
+.markeer-wat {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--tekst-flauw);
+}
+
+/* ── Een dossierstuk: papier op een donker bureau ───────────── */
+
+.papier {
+  background: var(--papier);
+  color: var(--papier-tekst);
+  border: 1px solid var(--papier-rand);
+  border-radius: 3px;
+  padding: 20px 20px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.papier-stempel {
+  font-family: var(--schrift-vast);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6d6552;
+  margin: 0;
+}
+
+.papier-titel {
+  font-size: 19px;
+  margin: 0;
+  color: #16140f;
+}
+
+.papier-tekst {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Een 'foto' is hier een grijs vlak met een beschrijving eronder. Er
+   bestaat geen enkel plaatje in dit project, en een beschreven beeld is
+   in een dossier trouwens onheilspellender dan een echte afdruk. */
+.beeldvlak {
+  height: 150px;
+  border: 1px solid #b0a48a;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.09) 0 2px,
+      rgba(0, 0, 0, 0.04) 2px 4px
+    ),
+    linear-gradient(160deg, #8f8a7d, #4f4c46);
+}
+
+/* ── Codeslot ───────────────────────────────────────────────── */
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 28px 12px;
+}
+
+.slot-teken {
+  font-size: 34px;
+}
+
+.slot-invoer {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.codeveld {
+  flex: 1;
+  min-width: 0;
+  background: var(--vlak-diep);
+  border: 1px solid var(--rand);
+  border-radius: var(--straal-klein);
+  color: var(--tekst);
+  font-family: var(--schrift-vast);
+  font-size: 20px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  padding: 12px;
+}
+
+.codeveld:focus {
+  outline: none;
+  border-color: var(--amber);
+}
+
+.slot-mis {
+  color: var(--rood);
+  font-size: 13px;
+  margin: 0;
+}
+
+.slot-duwtje {
+  border: 1px solid var(--rand-zacht);
+  background: var(--vlak);
+  border-radius: var(--straal-klein);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--tekst-zacht);
+  text-align: left;
+  max-width: 380px;
+}
+
+.slot-duwtje strong {
+  display: block;
+  color: var(--amber);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* ── Het bord ───────────────────────────────────────────────── */
+
+.bord {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  padding: 14px;
+  border-radius: var(--straal);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.025), transparent 60%),
+    var(--vlak-diep);
+  border: 1px solid var(--rand-zacht);
+  min-height: 160px;
+}
+
+.draden {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.draad {
+  stroke: var(--rood);
+  stroke-width: 1.5;
+  opacity: 0.55;
+}
+
+.draad.op {
+  stroke-width: 3;
+  opacity: 1;
+}
+
+.kaartje {
+  position: relative;
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 11px 12px;
+  text-align: left;
+  background: var(--vlak);
+  border: 1px solid var(--rand);
+  border-radius: var(--straal-klein);
+  color: var(--tekst);
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.kaartje:hover {
+  border-color: var(--tekst-flauw);
+}
+
+.kaartje.gekozen {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 2px rgba(230, 169, 76, 0.28);
+}
+
+.kaartje.op {
+  border-color: var(--rood);
+}
+
+.kaartsoort {
+  font-family: var(--schrift-vast);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tekst-flauw);
+}
+
+.kaarttitel {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.kaartbron {
+  font-size: 11px;
+  color: var(--tekst-flauw);
+}
+
+.conclusies {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conclusie {
+  appearance: none;
+  text-align: left;
+  background: var(--vlak);
+  border: 1px solid var(--rand-zacht);
+  border-left: 3px solid var(--rood);
+  border-radius: var(--straal-klein);
+  color: var(--tekst-zacht);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.conclusie.op,
+.conclusie:hover {
+  color: var(--tekst);
+  background: var(--vlak-hoog);
+}
+
+/* ── Briefjes (de meldingen onderin) ────────────────────────── */
+
+.briefjes {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--veilig-onder) + 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.briefje {
+  max-width: 460px;
+  width: 100%;
+  background: var(--vlak-hoog);
+  border: 1px solid var(--rand);
+  border-radius: var(--straal-klein);
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-line;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  animation: opkomen 0.18s ease;
+}
+
+.briefje.goed {
+  border-left: 3px solid var(--groen);
+}
+
+.briefje.mis {
+  border-left: 3px solid var(--rood);
+  color: var(--tekst-zacht);
+}
+
+@keyframes opkomen {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .briefje {
+    animation: none;
+  }
+  .metervulling {
+    transition: none;
+  }
+}
+
+/* ── De opdrachtkaart ───────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 8, 10, 0.8);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 30;
+}
+
+.opdrachtkaart {
+  background: var(--vlak);
+  border: 1px solid var(--rand);
+  border-radius: var(--straal);
+  padding: 24px;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.opdrachtkaart p {
+  color: var(--tekst-zacht);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.opdrachtkaart .knop.gevaar {
+  margin-top: 8px;
+  font-size: 13px;
+  padding: 10px;
+}

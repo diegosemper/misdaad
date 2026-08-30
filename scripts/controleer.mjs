@@ -18,7 +18,7 @@
    ───────────────────────────────────────────────────────────── */
 
 import { existsSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, resolve } from 'node:path'
 
 const hier = dirname(fileURLToPath(import.meta.url))
@@ -36,7 +36,8 @@ if (!existsSync(zaakPad)) {
   process.exit(0)
 }
 
-const zaak = await import(zaakPad).then((m) => m.hoofdstuk1)
+// Op Windows is 'c:\...' geen geldige module-URL, vandaar pathToFileURL.
+const zaak = await import(pathToFileURL(zaakPad).href).then((m) => m.hoofdstuk1)
 
 // ── 1. Ieder bewijsstuk heeft een uniek id ────────────────────
 const bewijsIds = new Set()
@@ -46,13 +47,13 @@ for (const b of zaak.bewijs) {
 }
 
 // ── 2. Elke verwijzing wijst naar iets dat bestaat ────────────
-const conclusieIds = new Set(zaak.verbanden.map((v) => v.id))
 const slotIds = new Set(zaak.sloten.map((s) => s.id))
 const gespreksIds = new Set(zaak.gesprekken.map((g) => g.id))
+const appIds = new Set(zaak.apps.map((a) => a.id))
 
 /** Alles wat een `opent`-lijst mag noemen. */
 function bestaat(id) {
-  return bewijsIds.has(id) || gespreksIds.has(id) || slotIds.has(id)
+  return bewijsIds.has(id) || gespreksIds.has(id) || slotIds.has(id) || appIds.has(id)
 }
 
 for (const v of zaak.verbanden) {
@@ -64,12 +65,25 @@ for (const v of zaak.verbanden) {
   }
 }
 
+/** Op welke app zit dit slot? Een slot zonder app kan de speler nooit zien. */
+const appVanSlot = new Map()
+for (const a of zaak.apps) if (a.slot) appVanSlot.set(a.slot, a.id)
+
 for (const s of zaak.sloten) {
   eis(bewijsIds.has(s.hintIn), `slot ${s.id} verwijst naar onbekend bewijs voor de hint: ${s.hintIn}`)
   eis(s.code.length > 0, `slot ${s.id} heeft geen code`)
+  eis(appVanSlot.has(s.id), `slot ${s.id} zit nergens op -- geen enkele app noemt het`)
   for (const id of s.opent) {
     eis(bestaat(id), `slot ${s.id} opent iets onbekends: ${id}`)
   }
+}
+
+for (const b of zaak.bewijs) {
+  if (b.app) eis(appIds.has(b.app), `bewijs ${b.id} ligt in een onbekende app: ${b.app}`)
+}
+
+for (const g of zaak.gesprekken) {
+  eis(appIds.has(g.app), `gesprek ${g.id} ligt in een onbekende app: ${g.app}`)
 }
 
 for (const g of zaak.gesprekken) {
@@ -81,84 +95,89 @@ for (const g of zaak.gesprekken) {
 }
 
 // ── 3. Kun je de zaak eigenlijk uitspelen? ────────────────────
-// We spelen hem na als een perfecte speler: alles pakken wat open is,
-// elk geldig verband leggen, elk slot kraken waarvan de hint gevonden is.
-// Komen we niet tot en met de laatste laag, dan zit de speler klem.
-const beschikbaar = new Set(zaak.begin)
-const gelegd = new Set()
-const gekraakt = new Set()
-const gehaaldeLagen = new Set()
+// We spelen hem na als een volmaakte speler: alles oppakken wat te zien
+// is, elk geldig verband leggen, elk slot kraken waar we voor kunnen
+// staan. Komen we niet tot en met de laatste laag, dan zit de speler klem.
+//
+// Dit draait op de échte motor uit src/engine/, niet op een nagebouwde
+// versie ervan. Anders controleer je uiteindelijk of twee kopieën van de
+// regels het met elkaar eens zijn in plaats van of de zaak klopt.
+const motorPad = resolve(hier, '..', 'src', 'engine', 'zaak.ts')
+const { beginToestand, pakOp, verbind, kraak } = await import(pathToFileURL(motorPad).href)
 
-function open(ids) {
-  for (const id of ids ?? []) beschikbaar.add(id)
-}
-
-for (const g of zaak.gesprekken) {
-  if (beschikbaar.has(g.id)) {
-    for (const bericht of g.berichten) open(bericht.levert)
-  }
-}
-
+let t = beginToestand(zaak)
 let veranderd = true
 let rondes = 0
-while (veranderd && rondes < 200) {
+
+while (veranderd && rondes < 500) {
   veranderd = false
   rondes++
 
-  for (const v of zaak.verbanden) {
-    if (gelegd.has(v.id)) continue
-    if (beschikbaar.has(v.van) && beschikbaar.has(v.naar)) {
-      gelegd.add(v.id)
-      open(v.opent)
-      veranderd = true
-    }
+  // Alles oppakken wat in een zichtbare app ligt.
+  for (const b of zaak.bewijs) {
+    if (t.verzameld.includes(b.id)) continue
+    if (!t.beschikbaar.includes(b.id)) continue
+    if (b.app && !t.beschikbaar.includes(b.app)) continue
+    t = pakOp(zaak, t, b.id).toestand
+    veranderd = true
   }
 
-  for (const s of zaak.sloten) {
-    if (gekraakt.has(s.id)) continue
-    if (beschikbaar.has(s.hintIn)) {
-      gekraakt.add(s.id)
-      open(s.opent)
-      veranderd = true
-    }
-  }
-
+  // Alles markeren in gesprekken die open staan.
   for (const g of zaak.gesprekken) {
-    if (!beschikbaar.has(g.id)) continue
+    if (!t.beschikbaar.includes(g.id)) continue
+    if (!t.beschikbaar.includes(g.app)) continue
     for (const bericht of g.berichten) {
       for (const id of bericht.levert ?? []) {
-        if (!beschikbaar.has(id)) {
-          beschikbaar.add(id)
-          veranderd = true
-        }
+        if (t.verzameld.includes(id)) continue
+        t = pakOp(zaak, t, id).toestand
+        veranderd = true
       }
     }
   }
 
-  for (const laag of zaak.lagen) {
-    if (gehaaldeLagen.has(laag.nr)) continue
-    if (laag.eist.every((id) => gelegd.has(id) || gekraakt.has(id) || beschikbaar.has(id))) {
-      gehaaldeLagen.add(laag.nr)
-      open(laag.opent)
-      veranderd = true
-    }
+  for (const v of zaak.verbanden) {
+    if (t.gelegd.includes(v.id)) continue
+    if (!t.verzameld.includes(v.van) || !t.verzameld.includes(v.naar)) continue
+    t = verbind(zaak, t, v.van, v.naar).toestand
+    veranderd = true
+  }
+
+  for (const s of zaak.sloten) {
+    if (t.gekraakt.includes(s.id)) continue
+    // Twee voorwaarden: de speler moet de hint hebben, én de app waar het
+    // slot op zit moet te zien zijn. Alleen de code kennen is niet genoeg
+    // als je nooit voor de deur komt te staan.
+    const app = appVanSlot.get(s.id)
+    if (!t.verzameld.includes(s.hintIn)) continue
+    if (!app || !t.beschikbaar.includes(app)) continue
+    t = kraak(zaak, t, s.id, s.code).toestand
+    veranderd = true
   }
 }
 
-for (const laag of zaak.lagen) {
-  eis(gehaaldeLagen.has(laag.nr), `laag ${laag.nr} (${laag.titel}) is onbereikbaar`)
-}
+const laatsteLaag = Math.max(...zaak.lagen.map((l) => l.nr))
+eis(
+  t.laag === laatsteLaag,
+  `een volmaakte speler komt niet verder dan fase ${t.laag} van ${laatsteLaag} ` +
+    `-- de zaak loopt dood`,
+)
 
 // ── 4. Los materiaal opsporen ─────────────────────────────────
 for (const b of zaak.bewijs) {
-  if (!beschikbaar.has(b.id)) {
+  if (!t.verzameld.includes(b.id)) {
     waarschuwingen.push(`bewijs ${b.id} ("${b.titel}") is nergens te vinden`)
   }
 }
 
 for (const v of zaak.verbanden) {
-  if (!gelegd.has(v.id)) {
+  if (!t.gelegd.includes(v.id)) {
     waarschuwingen.push(`verband ${v.id} kan nooit gelegd worden`)
+  }
+}
+
+for (const g of zaak.gesprekken) {
+  if (!t.beschikbaar.includes(g.id)) {
+    waarschuwingen.push(`gesprek ${g.id} ("${g.met}") komt nooit beschikbaar`)
   }
 }
 
