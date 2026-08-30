@@ -1012,3 +1012,102 @@ p {
   font-size: 13px;
   padding: 10px;
 }
+
+/* ═════════════════════════════════════════════════════════════
+   BESCHULDIGING EN SLOT
+   ═════════════════════════════════════════════════════════════ */
+
+.scherm > .terug {
+  margin-bottom: -6px;
+}
+
+.verdachten {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.verdachte {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  text-align: left;
+  background: var(--vlak);
+  border: 1px solid var(--rand-zacht);
+  border-radius: var(--straal-klein);
+  color: var(--tekst);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.verdachte:hover {
+  border-color: var(--rand);
+}
+
+.verdachte.gekozen {
+  border-color: var(--rood);
+  background: rgba(214, 69, 59, 0.08);
+}
+
+.bewijskeuze {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.bewijskeuze .kaartje:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.slotinhoud {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 12px 0 24px;
+}
+
+.slottitel {
+  font-size: 34px;
+  letter-spacing: 0.04em;
+}
+
+.slotregel {
+  color: var(--tekst-zacht);
+  font-size: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rand-zacht);
+}
+
+.slottekst {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--tekst);
+}
+
+.onthulling {
+  margin-top: 14px;
+  border: 1px solid var(--rand-zacht);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--straal-klein);
+  background: var(--vlak);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.onthulling p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--tekst-zacht);
+}
+
+.onthulling strong {
+  color: var(--tekst);
+}

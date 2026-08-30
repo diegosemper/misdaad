@@ -120,6 +120,13 @@ export type Persoon = {
   rol: string
 }
 
+/** Hoe het afloopt. */
+export type Einde = {
+  titel: string
+  /** Alinea's. `{naam}` wordt vervangen door wie je beschuldigd hebt. */
+  tekst: string
+}
+
 export type Hoofdstuk = {
   id: string
   titel: string
@@ -132,11 +139,21 @@ export type Hoofdstuk = {
   lagen: Laag[]
   /** Id's die vanaf het begin beschikbaar zijn. */
   begin: string[]
+  /** Wie je mag aanwijzen. Volgorde is de volgorde op het scherm. */
+  verdachten: string[]
   /** Wie het deed, en waarmee je dat sluitend maakt. */
   dader: {
     persoon: string
     bewijsA: string
     bewijsB: string
     bewijsC: string
+  }
+  eindes: {
+    /** Juiste dader, alle drie de dragende stukken. */
+    sluitend: Einde
+    /** Juiste dader, te weinig om het hard te maken. */
+    zwak: Einde
+    /** De verkeerde aangewezen. */
+    mis: Einde
   }
 }

@@ -466,4 +466,253 @@ export const bewijs: Bewijs[] = [
       'niet kunnen slapen. Dat weet ik. Ik kan zelf al elf jaar niet slapen. Daarom zie ' +
       'ik ook alles."',
   },
+
+  /* ── Fase 3: 't Anker ────────────────────────────────────── */
+  {
+    id: 'd-nfi-toestel',
+    soort: 'document',
+    app: 'app-dossier',
+    titel: 'NFI — onderzoek toestel M. de Vries',
+    bron: 'Nederlands Forensisch Instituut',
+    dag: 'wo 15 okt',
+    inhoud:
+      'Het toestel is volledig uitgelezen. Bevindingen:\n\n' +
+      '1. In het chatverkeer met contact "Werk \'t Anker" zijn 41 berichten aangetroffen ' +
+      'die door de gebruiker van dat contact zijn ingetrokken. Van 38 daarvan is de ' +
+      'inhoud hersteld uit het lokale geheugen.\n\n' +
+      '2. De notitie-app is met een eigen zescijferige code beveiligd, los van de ' +
+      'toestelcode. Deze code is niet te omzeilen zonder de inhoud te vernietigen. Zij ' +
+      'is door de gebruiker zelf ingesteld op 2 mei.\n\n' +
+      '3. In de galerij bevinden zich 14 schermafdrukken van chatverkeer, alle gemaakt ' +
+      'tussen 2 mei en 9 oktober. Zij heeft ze bewaard nadat de ander ze had ' +
+      'ingetrokken.',
+  },
+  {
+    id: 'f-scherm-joost',
+    soort: 'foto',
+    app: 'app-fotos',
+    titel: 'Schermafdruk, 2 mei',
+    bron: 'Toestel M. de Vries — galerij',
+    dag: '2 mei',
+    tijd: '01:14',
+    inhoud:
+      'Een schermafdruk van een chat met "Werk \'t Anker". Vier berichten, om even na ' +
+      'enen \'s nachts.\n\n' +
+      'De laatste luidt: "niet aan je moeder vertellen he. dan wordt het raar op het ' +
+      'werk en dat wil jij ook niet."\n\n' +
+      'Rechtsboven in beeld staat de datum. Marit was op dat moment zestien jaar en twee ' +
+      'maanden. Dit is de eerste van veertien.',
+  },
+  {
+    id: 'd-verklaring-joost-1',
+    soort: 'verklaring',
+    app: 'app-verhoren',
+    titel: 'Verklaring J. Bakker (eerste)',
+    bron: 'Verhoor, do 16 oktober',
+    inhoud:
+      '"Marit werkte bij mij op zaterdag. Aardig kind, altijd op tijd.\n\n' +
+      'Die avond? Nee. Ik heb haar die avond niet gezien. Ze werkte niet, dus wat zou ze ' +
+      'komen doen.\n\n' +
+      'Ik heb van zeven uur tot twee uur achter de bar gestaan. Vraag het aan wie je ' +
+      'wilt, er waren zestig man.\n\n' +
+      'Appen? Alleen over roosters. Zoals met al mijn personeel."\n\n' +
+      'Aantekening verbalisant: betrokkene is drie keer gevraagd of hij haar die avond ' +
+      'heeft gesproken. Drie keer ontkend.',
+  },
+  {
+    id: 'd-verklaring-marloes',
+    soort: 'verklaring',
+    app: 'app-verhoren',
+    titel: 'Verklaring M. Veldhuis',
+    bron: 'Verhoor, do 16 oktober',
+    inhoud:
+      '"Ik stond die avond achter de bar met Joost.\n\n' +
+      'Tussen half elf en elf was hij weg. In het magazijn, zei hij. Ik moest het alleen ' +
+      'doen en het was druk, dus ik weet het nog.\n\n' +
+      'Daarna is hij niet meer weggeweest. Echt niet. Vanaf elf uur was het zo druk dat ' +
+      'we allebei niet konden plassen.\n\n' +
+      'Of ik iets gehoord heb uit het magazijn? Er stond een band te spelen. Je hoorde ' +
+      'je eigen bestelling niet."',
+  },
+  {
+    id: 'd-kassa-anker',
+    soort: 'document',
+    app: 'app-dossier',
+    titel: "Kassa-uitdraai café-zaal 't Anker",
+    bron: 'Vordering exploitant',
+    dag: 'za 11 okt',
+    inhoud:
+      'Uitdraai van het kassasysteem, zaterdag 11 oktober.\n\n' +
+      'Twee kassa\'s, beide met een eigen bedienerscode. De code van J. Bakker is die ' +
+      'avond gebruikt bij term 1.\n\n' +
+      '  22:31 – 22:54   geen enkele handeling op de code van J. Bakker\n' +
+      '  23:00 – 02:04   onafgebroken handelingen, gemiddeld één per 70 seconden,\n' +
+      '                  langste onderbreking 6 minuten\n\n' +
+      'Tussen 23:00 en 02:04 kan de houder van deze code de zaak niet hebben verlaten.',
+  },
+  {
+    id: 'b-joost-gewist',
+    soort: 'bericht',
+    titel: 'De achtendertig teruggehaalde berichten',
+    bron: "Chat met Werk 't Anker — hersteld door het NFI",
+    inhoud:
+      'Achtendertig berichten die de afzender heeft ingetrokken, tussen 2 mei en ' +
+      '9 oktober, allemaal verstuurd tussen middernacht en half drie \'s nachts.\n\n' +
+      'Ze beginnen als complimenten. Ze worden lieve verwijten. Ze eindigen als: "je gaat ' +
+      'dit niet kapotmaken", "wie denk je dat ze geloven" en "ik heb je ouders erbij ' +
+      'gehaald, denk daar maar eens over na".\n\n' +
+      'Het laatste is van 9 oktober, 01:47.',
+  },
+
+  /* ── Fase 4: de leugen ───────────────────────────────────── */
+  {
+    id: 'd-verklaring-ruud-1',
+    soort: 'verklaring',
+    app: 'app-verhoren',
+    titel: 'Verklaring R. Kolthof (eerste)',
+    bron: 'Verhoor, di 14 oktober',
+    inhoud:
+      '"Ik ben om een uur of tien naar bed gegaan. Ik sta om vijf uur op, dus dat is ' +
+      'niet vroeg voor mij.\n\n' +
+      'Ellen lag beneden. Die had gedronken. Dat zeg ik niet om haar zwart te maken, dat ' +
+      'is gewoon zo.\n\n' +
+      'Ik heb niets gehoord. Ik heb de hele nacht doorgeslapen en \'s ochtends hoorde ik ' +
+      'het van Ellen.\n\n' +
+      'Of ik haar die avond nog gesproken heb? Nee. Ik spreek dat kind nauwelijks. Dat is ' +
+      'geen geheim hier."\n\n' +
+      'Aantekening verbalisant: betrokkene is rustig, meewerkend en consistent. Hij biedt ' +
+      'uit zichzelf aan mee te lopen met de zoekacties.',
+  },
+  {
+    id: 'd-gunning',
+    soort: 'document',
+    app: 'app-dossier',
+    titel: 'Gunningen Kolthof Bouw',
+    bron: 'Uittreksel gemeente Westerveld',
+    inhoud:
+      'Opdrachten aan Kolthof Bouw BV in 2026:\n\n' +
+      '  3 juli    Verbouwing zaal café-zaal \'t Anker\n' +
+      '            Opdrachtgever: J. Bakker. € 78.400.\n' +
+      '            Geen offerte van derden opgevraagd.\n\n' +
+      '  19 aug    Grondwerk en fundering Kolkweg fase 1\n' +
+      '            Opdrachtgever: gemeente Westerveld. € 214.000.\n' +
+      '            Enkelvoudig onderhands gegund. Tekenbevoegd: W. Prins.\n\n' +
+      'In de vier jaar daarvoor heeft Kolthof Bouw geen enkele gemeentelijke opdracht ' +
+      'gehad.',
+  },
+  {
+    id: 'd-verklaring-wouter',
+    soort: 'verklaring',
+    app: 'app-verhoren',
+    titel: 'Verklaring W. Prins',
+    bron: 'Verhoor, vr 17 oktober',
+    inhoud:
+      '"Enkelvoudig onderhands, ja. Dat mag onder de drempel en daar zat het onder.\n\n' +
+      'Waarom Kolthof? Omdat hij hier woont en omdat hij goed werk levert. Zo simpel is ' +
+      'het.\n\n' +
+      'Of Joost Bakker het gevraagd heeft — kijk, Joost vraagt van alles. Die man zit in ' +
+      'zes besturen. Dat is niet hetzelfde als dat ik naar hem luister.\n\n' +
+      'Nee, ik heb geen enkele offerte opgevraagd. Achteraf had dat gemoeten. Dat geef ik ' +
+      'toe. Maar er is niets mee gebeurd wat niet door de beugel kan."\n\n' +
+      'Aantekening verbalisant: betrokkene noemt uit zichzelf de naam J. Bakker, terwijl ' +
+      'daar niet naar was gevraagd.',
+  },
+  {
+    id: 'd-verklaring-karin',
+    soort: 'verklaring',
+    app: 'app-verhoren',
+    titel: 'Verklaring K. Nijhof',
+    bron: 'Verhoor, vr 17 oktober',
+    inhoud:
+      '"Ik doe de boeken van Ruud al negen jaar.\n\n' +
+      'In juli komt daar ineens een opdracht van \'t Anker binnen. Achtenzeventig mille. ' +
+      'Zonder offerte, zonder aanbesteding, en met een aanbetaling die veel te hoog is ' +
+      'voor de fase waarin het werk zat.\n\n' +
+      'Ik heb het gevraagd. Hij zei: dat is tussen Joost en mij geregeld.\n\n' +
+      'En toen kwam de Kolkweg. Ik heb toen niets meer gevraagd. Dat had ik moeten doen. ' +
+      'Ik dacht dat het over belasting ging. Dat denk je dan."',
+  },
+  {
+    id: 'b-dylan-loods',
+    soort: 'bericht',
+    titel: 'Dylan over die zondag',
+    bron: 'Chat met Dylan',
+    dag: 'zo 12 okt',
+    tijd: '08:02',
+    inhoud:
+      'Dylan: pa vroeg of ik zondagochtend de bus wou stofzuigen\n' +
+      'Dylan: hij had m al schoongemaakt maar hij wou m nog een keer\n' +
+      'Dylan: op een zondag\n' +
+      'Dylan: en toen ging hij mee zoeken alsof er niks was\n\n' +
+      'Dylan heeft dit bericht op zondagochtend naar Marit gestuurd, voordat hij wist ' +
+      'dat ze vermist was.',
+  },
+
+  /* ── Fase 5: de ontknoping ───────────────────────────────── */
+  {
+    id: 'd-bouwput',
+    soort: 'document',
+    app: 'app-dossier',
+    titel: 'Werkplanning Kolkweg fase 1',
+    bron: 'Vordering Kolthof Bouw',
+    inhoud:
+      'Planning grondwerk en fundering Kolkweg, week 41 en 42:\n\n' +
+      '  vr 10 okt   sleuven graven, wapening leggen — gereed\n' +
+      '  za 11 okt   geen werk. Kraan blijft op het terrein.\n' +
+      '  zo 12 okt   geen werk.\n' +
+      '  ma 13 okt   06:30 aanvang storten beton, 4 wagens\n\n' +
+      'Het storten is uitgevoerd zoals gepland. R. Kolthof was persoonlijk aanwezig ' +
+      'vanaf 06:00. Volgens de chauffeurs van de betoncentrale was dat ongebruikelijk; ' +
+      'normaal stuurt hij zijn zoon.\n\n' +
+      'De sleuven zijn zaterdagavond open geweest. De mast Kolkweg dekt dit terrein.',
+  },
+  {
+    id: 'b-buurtapp-kolkweg',
+    soort: 'bericht',
+    titel: 'De zoekactie wordt weggestuurd',
+    bron: 'Buurtapp Westerveld (312 leden)',
+    dag: 'ma 13 okt',
+    tijd: '09:44',
+    inhoud:
+      'Maandagochtend om half tien wil het dorp het Kolkgebied afzoeken. Verzamelen bij ' +
+      "'t Anker, koffie van Joost.\n\n" +
+      'Wim: "Kolthof zegt dat het terrein afgezet is ivm de stort morgen."\n' +
+      'Wim: "We doen het bos dan."\n\n' +
+      'Op dat moment was het beton er drie uur eerder al in gegaan.',
+  },
+  {
+    id: 'd-verklaring-ruud-2',
+    soort: 'verklaring',
+    app: 'app-verhoren',
+    titel: 'Verklaring R. Kolthof (tweede)',
+    bron: 'Nader verhoor',
+    inhoud:
+      '"Waarom mijn telefoon uit stond. Omdat hij leeg was.\n\n' +
+      'Nee, ik heb hem niet opgeladen, want ik lag te slapen. Wat is dit voor vraag.\n\n' +
+      '(Na voorhouden van de mastgegevens:) Dan klopt dat apparaat niet. Ik heb thuis ' +
+      'geslapen.\n\n' +
+      '(Na voorhouden van de verklaring van mw. Slot:) Die vrouw ziet al twintig jaar ' +
+      'dingen. Vraag maar in de straat.\n\n' +
+      '(Na voorhouden van het telefoongesprek van 23:24:) Dat weet ik niet meer. Ze zal ' +
+      'gebeld hebben of ik haar kwam halen. Dat deed ik weleens.\n\n' +
+      'En nee, dat heb ik dinsdag niet gezegd. Dat vroeg u ook niet."\n\n' +
+      'Aantekening verbalisant: betrokkene komt in dit verhoor drie keer terug op een ' +
+      'eerdere verklaring. Hij vraagt tweemaal of zijn vrouw meeluistert.',
+  },
+  {
+    id: 'd-bus-onderzoek',
+    soort: 'document',
+    app: 'app-dossier',
+    titel: 'Sporenonderzoek bedrijfsbus',
+    bron: 'Forensische opsporing',
+    dag: 'za 18 okt',
+    inhoud:
+      'Onderzocht: Volkswagen Crafter, kenteken op naam van Kolthof Bouw BV.\n\n' +
+      'Het interieur is gereinigd met een hogedrukreiniger en een chloorhoudend middel. ' +
+      'De bekleding van de passagiersstoel is nat geweest en van binnenuit gedroogd.\n\n' +
+      'Geen bruikbaar biologisch spoor aangetroffen.\n\n' +
+      'Opmerking: in de naad tussen de rechter deurstijl en het rubber is een fragment ' +
+      'aangetroffen van 4 mm, mogelijk kunststof. Herkomst niet vastgesteld. Het ' +
+      'onderzoek is zeven dagen na de vermissing aangevangen.',
+  },
 ]

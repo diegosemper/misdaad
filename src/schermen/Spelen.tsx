@@ -1,22 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
-import { hoofdstuk1 } from '../verhaal/h1/index.ts'
+import type { Hoofdstuk } from '../verhaal/types.ts'
 import type { Melding, Toestand, Uitkomst } from '../engine/zaak.ts'
 import {
-  beginToestand,
   huidigeLaag,
   kraak,
+  magBeschuldigen,
   markeerGelezen,
   pakOp,
   verbind,
   vordering,
 } from '../engine/zaak.ts'
-import { bewaar, laad, wis } from '../opslag/voortgang.ts'
 import Telefoon from '../ui/Telefoon'
 import Prikbord from '../ui/Prikbord'
 
-/* Het speelscherm. Houdt de toestand vast, geeft hem door aan de twee
-   panelen, en bewaart hem na élke wijziging -- je speelt hier uren aan,
-   dus "opslaan" mag geen handeling zijn die je kunt vergeten.
+/* Het speelscherm. Geeft de toestand door aan de twee panelen en zet de
+   meldingen om in briefjes onderin.
 
    Op een breed scherm staan telefoon en bord naast elkaar. Op een
    telefoon niet: dan zijn het twee tabbladen, want twee kolommen van
@@ -26,19 +24,28 @@ let volgnummer = 0
 
 type Briefje = { nr: number; melding: Melding }
 
-export default function Spelen({ bijStoppen }: { bijStoppen: () => void }) {
-  const [toestand, zetToestand] = useState<Toestand>(
-    () => laad() ?? beginToestand(hoofdstuk1),
-  )
+type Props = {
+  hoofdstuk: Hoofdstuk
+  toestand: Toestand
+  zetToestand: (t: Toestand) => void
+  bijStoppen: () => void
+  bijBeschuldigen: () => void
+  bijOpnieuw: () => void
+}
+
+export default function Spelen({
+  hoofdstuk,
+  toestand,
+  zetToestand,
+  bijStoppen,
+  bijBeschuldigen,
+  bijOpnieuw,
+}: Props) {
   const [briefjes, zetBriefjes] = useState<Briefje[]>([])
   const [tab, zetTab] = useState<'telefoon' | 'bord'>('telefoon')
   const [laagKaart, zetLaagKaart] = useState(false)
 
   const klokken = useRef<number[]>([])
-
-  useEffect(() => {
-    bewaar(toestand)
-  }, [toestand])
 
   // Aflopende briefjes netjes opruimen, ook als het scherm tussentijds weg is.
   useEffect(() => {
@@ -52,7 +59,7 @@ export default function Spelen({ bijStoppen }: { bijStoppen: () => void }) {
     zetBriefjes((oud) => [...oud, ...nieuwe])
 
     for (const briefje of nieuwe) {
-      const duur = briefje.melding.soort === 'verband' ? 9000 : 4500
+      const duur = briefje.melding.soort === 'verband' ? 11000 : 4500
       const klok = window.setTimeout(() => {
         zetBriefjes((oud) => oud.filter((b) => b.nr !== briefje.nr))
       }, duur)
@@ -67,20 +74,24 @@ export default function Spelen({ bijStoppen }: { bijStoppen: () => void }) {
     toon(uitkomst.meldingen)
   }
 
-  const laag = huidigeLaag(hoofdstuk1, toestand)
+  const laag = huidigeLaag(hoofdstuk, toestand)
+  const magWijzen = magBeschuldigen(hoofdstuk, toestand)
 
   return (
     <div className="speelscherm">
       <header className="balk">
-        <button className="knop kaal" onClick={bijStoppen}>
+        <button className="knop kaal" onClick={bijStoppen} aria-label="Terug">
           ←
         </button>
         <div className="balkmidden">
           <span className="stempel">
-            Zaak 2026-0417 · fase {laag.nr} — {laag.titel}
+            Fase {laag.nr} — {laag.titel}
           </span>
           <div className="meter" aria-hidden="true">
-            <div className="metervulling" style={{ width: `${vordering(hoofdstuk1, toestand)}%` }} />
+            <div
+              className="metervulling"
+              style={{ width: `${vordering(hoofdstuk, toestand)}%` }}
+            />
           </div>
         </div>
         <button
@@ -113,12 +124,12 @@ export default function Spelen({ bijStoppen }: { bijStoppen: () => void }) {
       <main className="panelen">
         <div className={'kolom' + (tab === 'telefoon' ? ' aan' : '')}>
           <Telefoon
-            hoofdstuk={hoofdstuk1}
+            hoofdstuk={hoofdstuk}
             toestand={toestand}
-            bijOpenen={(id) => zetToestand((t) => markeerGelezen(t, id))}
-            bijOppakken={(id) => verwerk(pakOp(hoofdstuk1, toestand, id))}
+            bijOpenen={(id) => zetToestand(markeerGelezen(toestand, id))}
+            bijOppakken={(id) => verwerk(pakOp(hoofdstuk, toestand, id))}
             bijKraken={(slotId, code) => {
-              const uitkomst = kraak(hoofdstuk1, toestand, slotId, code)
+              const uitkomst = kraak(hoofdstuk, toestand, slotId, code)
               verwerk(uitkomst)
               return uitkomst.meldingen.some((m) => m.soort === 'slot-open')
             }}
@@ -126,16 +137,27 @@ export default function Spelen({ bijStoppen }: { bijStoppen: () => void }) {
         </div>
         <div className={'kolom' + (tab === 'bord' ? ' aan' : '')}>
           <Prikbord
-            hoofdstuk={hoofdstuk1}
+            hoofdstuk={hoofdstuk}
             toestand={toestand}
-            bijVerbinden={(a, b) => verwerk(verbind(hoofdstuk1, toestand, a, b))}
+            bijVerbinden={(a, b) => verwerk(verbind(hoofdstuk, toestand, a, b))}
           />
+          {magWijzen && (
+            <div className="paneel">
+              <button className="knop hoofd" onClick={bijBeschuldigen}>
+                Iemand aanwijzen
+              </button>
+              <p className="paneelvoet">
+                Je hebt genoeg om een naam te noemen. Of je genoeg hebt om hem vast te
+                houden is een andere vraag.
+              </p>
+            </div>
+          )}
         </div>
       </main>
 
       <div className="briefjes">
         {briefjes.map(({ nr, melding }) => (
-          <div key={nr} className={`briefje ${soortvanMelding(melding)}`}>
+          <div key={nr} className={`briefje ${soortVanMelding(melding)}`}>
             {tekstVanMelding(melding)}
           </div>
         ))}
@@ -144,7 +166,7 @@ export default function Spelen({ bijStoppen }: { bijStoppen: () => void }) {
       {laagKaart && (
         <div className="overlay" onClick={() => zetLaagKaart(false)}>
           <div className="opdrachtkaart" onClick={(e) => e.stopPropagation()}>
-            <p className="stempel">Fase {laag.nr}</p>
+            <p className="stempel">Fase {laag.nr} van 5</p>
             <h2>{laag.titel}</h2>
             <p>{laag.opdracht}</p>
             <button className="knop hoofd" onClick={() => zetLaagKaart(false)}>
@@ -154,9 +176,7 @@ export default function Spelen({ bijStoppen }: { bijStoppen: () => void }) {
               className="knop gevaar"
               onClick={() => {
                 if (!confirm('Alles wissen en opnieuw beginnen?')) return
-                wis()
-                zetToestand(beginToestand(hoofdstuk1))
-                zetLaagKaart(false)
+                bijOpnieuw()
               }}
             >
               Zaak opnieuw beginnen
@@ -168,12 +188,10 @@ export default function Spelen({ bijStoppen }: { bijStoppen: () => void }) {
   )
 }
 
-function soortvanMelding(m: Melding): string {
+function soortVanMelding(m: Melding): string {
   switch (m.soort) {
     case 'verband':
-      return 'goed'
     case 'slot-open':
-      return 'goed'
     case 'laag':
       return 'goed'
     case 'geen-verband':

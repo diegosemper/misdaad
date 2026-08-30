@@ -46,7 +46,12 @@ export const buurtapp: Gesprek = {
     { van: 'ria', tekst: 'Joost regelt koffie ❤️', tijd: '09:31' },
     { van: 'gerda', tekst: 'Wat een goede man is dat toch', tijd: '09:33' },
     { van: 'henk', tekst: 'Kolkweg heeft geen zin daar wordt gebouwd, daar kan je niet lopen', tijd: '09:40' },
-    { van: 'wim', tekst: 'Kolthof zegt dat het terrein afgezet is ivm de stort morgen', tijd: '09:44' },
+    {
+      van: 'wim',
+      tekst: 'Kolthof zegt dat het terrein afgezet is ivm de stort morgen',
+      tijd: '09:44',
+      levert: ['b-buurtapp-kolkweg'],
+    },
     { van: 'wim', tekst: 'We doen het bos dan', tijd: '09:44' },
     { van: 'ria', tekst: 'Prima', tijd: '09:45' },
 

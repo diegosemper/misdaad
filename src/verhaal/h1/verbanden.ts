@@ -146,4 +146,154 @@ export const verbanden: Verband[] = [
       'auto. Ruud Kolthof heeft tegen de politie verklaard dat hij die nacht heeft ' +
       'geslapen.',
   },
+
+  /* ── Fase 3: 't Anker ────────────────────────────────────── */
+  {
+    id: 'v-joost-liegt',
+    van: 'b-joost-gewist',
+    naar: 'd-verklaring-joost-1',
+    conclusie:
+      'Hij zegt dat hij haar alleen over roosters appte, zoals al zijn personeel. Het ' +
+      'NFI haalde achtendertig berichten terug die hij had ingetrokken, allemaal tussen ' +
+      'middernacht en half drie. Hij liegt over alles wat hij kan liegen.',
+    opent: ['d-kassa-anker', 'd-verklaring-marloes'],
+  },
+  {
+    id: 'v-magazijn',
+    van: 'd-verklaring-marloes',
+    naar: 'd-verklaring-ineke-1',
+    conclusie:
+      'Van half elf tot elf was Joost weg van de bar, "in het magazijn". Precies in die ' +
+      'twintig minuten zag Ineke Slot Marit het steegje in gaan en er huilend uit komen.',
+  },
+  {
+    id: 'v-joost-alibi',
+    van: 'd-kassa-anker',
+    naar: 'd-verklaring-marloes',
+    conclusie:
+      'Vanaf elf uur staat er onafgebroken werk op zijn bedienerscode, één handeling per ' +
+      'zeventig seconden tot na tweeën. Joost Bakker was er wél om half elf, maar hij ' +
+      'kan om kwart voor twaalf niet in een auto op de Molenweg hebben gezeten. Hij is ' +
+      'niet degene die haar heeft opgehaald.',
+    opent: ['app-notities', 'f-scherm-joost'],
+  },
+  {
+    id: 'v-zestien',
+    van: 'f-scherm-joost',
+    naar: 'd-nfi-toestel',
+    conclusie:
+      'Veertien schermafdrukken, bewaard nadat hij ze had ingetrokken, de eerste van ' +
+      '2 mei. Ze was zestien. Ze legde vanaf de eerste nacht een dossier aan, want ze ' +
+      'wist toen al dat niemand haar op haar woord zou geloven.',
+  },
+  {
+    id: 'v-niet-de-eerste',
+    van: 'n-lijst',
+    naar: 'b-joost-gewist',
+    conclusie:
+      'Drie namen met jaartallen, één doorgestreept met "verhuisd, wil niet". Ze was ' +
+      'niet de eerste, en dat wist ze. Daaronder een tweede lijst, met een kop in ' +
+      'hoofdletters: WIE WIST HET EN DEED NIETS.',
+  },
+
+  /* ── Fase 4: de leugen ───────────────────────────────────── */
+  {
+    id: 'v-ruud-wist-het',
+    van: 'n-14-juni',
+    naar: 'o-2324-ruud',
+    conclusie:
+      'Op 14 juni vertelde ze het aan Ruud, in de bus, op de oprit, met de motor uit. ' +
+      'Hij vroeg drie keer of haar moeder het wist en zei toen: ik regel het. Vier ' +
+      'maanden later is het laatste telefoongesprek van haar leven met hem.',
+    opent: ['d-gunning', 'd-verklaring-karin'],
+  },
+  {
+    id: 'v-verkocht',
+    van: 'n-boodschappen',
+    naar: 'd-gunning',
+    conclusie:
+      'Drie weken nadat ze het hem vertelde kreeg Kolthof Bouw de verbouwing van ' +
+      '\'t Anker, zonder offerte, met een veel te hoge aanbetaling. Zes weken later de ' +
+      'Kolkweg, enkelvoudig gegund. Haar eigen woorden: "Hij heeft het niet doorgegeven. ' +
+      'Hij heeft het verkocht."',
+    opent: ['d-verklaring-wouter', 'd-verklaring-ruud-1'],
+  },
+  {
+    id: 'v-boekhouding',
+    van: 'd-verklaring-karin',
+    naar: 'd-gunning',
+    conclusie:
+      'Zijn eigen boekhouder vroeg ernaar en kreeg te horen dat het tussen Joost en hem ' +
+      'geregeld was. In de vier jaar daarvoor had Kolthof Bouw geen enkele gemeentelijke ' +
+      'opdracht gehad.',
+  },
+  {
+    id: 'v-wouter-noemt-joost',
+    van: 'd-verklaring-wouter',
+    naar: 'd-verklaring-joost-1',
+    conclusie:
+      'De wethouder noemt uit zichzelf de naam Joost Bakker, terwijl daar niet naar ' +
+      'gevraagd is. Niemand in dit dorp heeft samengespannen. Ze wisten alleen allemaal ' +
+      'net genoeg om zich ongemakkelijk te voelen.',
+  },
+  {
+    id: 'v-bus-twee-keer',
+    van: 'b-dylan-loods',
+    naar: 'd-verklaring-ruud-1',
+    conclusie:
+      'Hij zegt dat hij de hele nacht heeft geslapen. Zondagochtend had hij de bus al ' +
+      'schoongemaakt en vroeg hij zijn zoon om hem nóg een keer te doen. Daarna liep hij ' +
+      'mee met de zoekactie.',
+    opent: ['d-mast-ruud', 'd-verklaring-ineke-2'],
+  },
+
+  /* ── Fase 5: de ontknoping ───────────────────────────────── */
+  {
+    id: 'v-88-minuten',
+    van: 'd-mast-ruud',
+    naar: 'd-verklaring-ruud-1',
+    conclusie:
+      'Om 23:58 boekt zijn telefoon in op de mast Kolkweg, een kilometer van zijn bed, ' +
+      'elf minuten nadat die van Marit daar voor het laatst hing. Daarna staat hij ' +
+      'achtentachtig minuten uit — de enige keer in vier jaar dat dit toestel langer dan ' +
+      'vijf minuten uit is geweest.',
+    opent: ['d-bouwput', 'd-verklaring-ruud-2', 'd-bus-onderzoek'],
+  },
+  {
+    id: 'v-bus-schoonspuiten',
+    van: 'd-mast-ruud',
+    naar: 'd-verklaring-ineke-2',
+    conclusie:
+      'Om 01:26 gaat zijn telefoon weer aan op de mast Molenweg. Acht minuten later ziet ' +
+      'Ineke Slot hem op de oprit staan met de hogedrukspuit, portieren open, naar ' +
+      'binnen spuitend. In oktober, in het donker. Ze heeft het drie keer verteld.',
+  },
+  {
+    id: 'v-kolkweg',
+    van: 'd-mast-ruud',
+    naar: 'd-bouwput',
+    conclusie:
+      'De sleuven aan de Kolkweg lagen dat weekend open, met de kraan er al naast. ' +
+      'Maandagochtend om half zeven is er beton in gegaan, en hij stond er zelf bij — ' +
+      'iets wat hij volgens de chauffeurs nooit doet. De mast waar hij om 23:58 op ' +
+      'inboekte dekt precies dat terrein.',
+  },
+  {
+    id: 'v-zoekactie-weggestuurd',
+    van: 'b-buurtapp-kolkweg',
+    naar: 'd-bouwput',
+    conclusie:
+      'Om half tien maandagochtend wilde het dorp het Kolkgebied afzoeken. Hij liet ' +
+      'weten dat het terrein afgezet was in verband met de stort van dinsdag. Het beton ' +
+      'lag er op dat moment drie uur in.',
+  },
+  {
+    id: 'v-schoongemaakt',
+    van: 'd-bus-onderzoek',
+    naar: 'd-verklaring-ruud-2',
+    conclusie:
+      'De bus is van binnen met chloor en hoge druk gereinigd, de passagiersstoel is nat ' +
+      'geweest en van binnenuit gedroogd. Er is niets meer te vinden. Het onderzoek begon ' +
+      'zeven dagen na de vermissing, omdat niemand op tijd naar hem heeft gekeken.',
+  },
 ]

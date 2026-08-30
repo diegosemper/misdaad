@@ -182,9 +182,44 @@ for (const g of zaak.gesprekken) {
 }
 
 // ── 5. De ontknoping moet te onderbouwen zijn ─────────────────
-eis(bewijsIds.has(zaak.dader.bewijsA), `sluitend bewijs A bestaat niet: ${zaak.dader.bewijsA}`)
-eis(bewijsIds.has(zaak.dader.bewijsB), `sluitend bewijs B bestaat niet: ${zaak.dader.bewijsB}`)
-eis(bewijsIds.has(zaak.dader.bewijsC), `sluitend bewijs C bestaat niet: ${zaak.dader.bewijsC}`)
+const dragend = [zaak.dader.bewijsA, zaak.dader.bewijsB, zaak.dader.bewijsC]
+
+for (const [naam, id] of [['A', dragend[0]], ['B', dragend[1]], ['C', dragend[2]]]) {
+  eis(bewijsIds.has(id), `sluitend bewijs ${naam} bestaat niet: ${id}`)
+  eis(t.verzameld.includes(id), `sluitend bewijs ${naam} (${id}) is niet te vinden`)
+}
+
+eis(new Set(dragend).size === 3, 'de drie sluitende bewijsstukken zijn niet alle drie anders')
+eis(
+  zaak.verdachten.includes(zaak.dader.persoon),
+  `de dader (${zaak.dader.persoon}) staat niet tussen de verdachten -- hij is niet aan te wijzen`,
+)
+for (const id of zaak.verdachten) {
+  eis(
+    zaak.personen.some((p) => p.id === id),
+    `verdachte ${id} bestaat niet als persoon`,
+  )
+}
+
+// Ook dit op de echte motor: een typefout in dader.bewijsA moet hier
+// stukgaan en niet pas als een speler na drie uur op 'Dien in' drukt.
+const beschuldigPad = resolve(hier, '..', 'src', 'engine', 'beschuldiging.ts')
+const { beoordeel } = await import(pathToFileURL(beschuldigPad).href)
+
+eis(
+  beoordeel(zaak, zaak.dader.persoon, dragend).einde === 'sluitend',
+  'de drie dragende stukken leveren geen sluitend einde op',
+)
+eis(
+  beoordeel(zaak, zaak.dader.persoon, [dragend[0], dragend[1], zaak.bewijs[0].id])
+    .einde === 'zwak' || dragend.includes(zaak.bewijs[0].id),
+  'zwak bewijs bij de juiste dader levert geen zwak einde op',
+)
+const iemandAnders = zaak.verdachten.find((id) => id !== zaak.dader.persoon)
+eis(
+  beoordeel(zaak, iemandAnders, dragend).einde === 'mis',
+  'de verkeerde aanwijzen levert geen mis-einde op',
+)
 
 // ── Uitslag ───────────────────────────────────────────────────
 console.log(
