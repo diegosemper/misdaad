@@ -4,6 +4,7 @@ import type { Oordeel } from './engine/beschuldiging.ts'
 import type { Toestand } from './engine/zaak.ts'
 import { beginToestand } from './engine/zaak.ts'
 import { bewaar, laad, wis } from './opslag/voortgang.ts'
+import Splash from './schermen/Splash'
 import Start from './schermen/Start'
 import Spelen from './schermen/Spelen'
 import Beschuldiging from './schermen/Beschuldiging'
@@ -17,7 +18,7 @@ import Slotscherm from './schermen/Slotscherm'
    beschuldigingsscherm hem ook nodig heeft: je kunt alleen bewijs
    aandragen dat je daadwerkelijk op het bord hebt liggen. */
 
-export type Fase = 'start' | 'spelen' | 'beschuldiging' | 'slot'
+export type Fase = 'splash' | 'start' | 'spelen' | 'beschuldiging' | 'slot'
 
 export type Uitspraak = {
   persoon: string
@@ -26,7 +27,7 @@ export type Uitspraak = {
 }
 
 export default function App() {
-  const [fase, zetFase] = useState<Fase>('start')
+  const [fase, zetFase] = useState<Fase>('splash')
   const [toestand, zetToestand] = useState<Toestand>(
     () => laad() ?? beginToestand(hoofdstuk1),
   )
@@ -46,6 +47,8 @@ export default function App() {
   }
 
   switch (fase) {
+    case 'splash':
+      return <Splash bijVerder={() => zetFase('start')} />
     case 'spelen':
       return (
         <Spelen

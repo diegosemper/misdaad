@@ -286,6 +286,406 @@ p {
 }
 
 /* ═════════════════════════════════════════════════════════════
+   HET OPSTARTSCHERM
+
+   Dit is het enige scherm in het spel dat mag schrikken. Overal
+   anders is beweging hinderlijk -- hier is het de bedoeling.
+
+   Regel voor de veiligheid: geen geflits. Twee storingen van een
+   tiende seconde in zes seconden, en al het andere beweegt trager
+   dan je adem. Onder prefers-reduced-motion staat alles stil.
+   ═════════════════════════════════════════════════════════════ */
+
+.splash {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--veilig-boven) + 24px) 22px calc(var(--veilig-onder) + 24px);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Het ademen: een rode gloed in de randen die traag op- en afzwelt.
+   Nooit fel, nooit snel. Je merkt het pas als je erop let. */
+.splash-adem {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 50%,
+    transparent 40%,
+    rgba(120, 16, 12, 0.5) 100%
+  );
+  animation: adem 7.5s ease-in-out infinite alternate;
+}
+
+@keyframes adem {
+  from {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.8;
+    transform: scale(1.06);
+  }
+}
+
+/* Filmkorrel. Eén SVG-ruisje als achtergrond, dat in stapjes verspringt --
+   dat leest als korrel en niet als een bewegend patroon. */
+.splash-korrel {
+  position: absolute;
+  inset: -50%;
+  opacity: 0.32;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23r)'/%3E%3C/svg%3E");
+  animation: korrel 0.6s steps(3) infinite;
+}
+
+@keyframes korrel {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(-3%, 2%);
+  }
+  66% {
+    transform: translate(2%, -3%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Beeldlijnen van een monitor die te lang aan staat. */
+.splash-lijnen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.5) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.45;
+  animation: zakken 9s linear infinite;
+}
+
+@keyframes zakken {
+  to {
+    background-position-y: 3px;
+  }
+}
+
+.splash-inhoud {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  animation: schok 0.4s ease-out 3.4s both;
+}
+
+/* De klap als de titel erin slaat. Eén keer, kort, en klein genoeg om
+   te voelen zonder dat je scherm op hol slaat. */
+@keyframes schok {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-3px, 2px);
+  }
+  45% {
+    transform: translate(3px, -2px);
+  }
+  70% {
+    transform: translate(-2px, -1px);
+  }
+}
+
+.splash-eenheid {
+  font-family: var(--schrift-vast);
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  color: #6a4340;
+  margin: 0;
+  animation: opdoemen 1.4s ease-out 0.3s both;
+}
+
+@keyframes opdoemen {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ── De dossierkop ──────────────────────────────────────────── */
+
+.splash-kop {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border-left: 1px solid #3a1a18;
+  padding-left: 14px;
+}
+
+.splash-regel {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  animation: inklikken 0.5s steps(4, end) both;
+}
+
+/* In stapjes en niet vloeiend: het moet aanvoelen als een systeem dat
+   regels uitspuugt, niet als een presentatie die opent. */
+@keyframes inklikken {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.splash-regel dt {
+  font-family: var(--schrift-vast);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #5c4441;
+  margin: 0;
+}
+
+.splash-regel dd {
+  font-family: var(--schrift-vast);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #b9a8a4;
+  margin: 0;
+}
+
+/* De storing. Twee keer, een tiende seconde. Je weet niet zeker of je
+   het gezien hebt, en dat is precies de bedoeling. */
+.splash-regel dd.splash-storing {
+  color: var(--rood);
+  text-shadow: 2px 0 rgba(75, 214, 214, 0.9), -2px 0 rgba(214, 69, 59, 0.9);
+  transform: translateX(-2px) skewX(-6deg);
+}
+
+/* ── De titel ───────────────────────────────────────────────── */
+
+.splash-titelblok {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.splash-titel {
+  position: relative;
+  font-size: clamp(46px, 17vw, 78px);
+  line-height: 0.94;
+  letter-spacing: 0.16em;
+  margin: 0;
+  color: #efe6e4;
+  animation: inslaan 0.5s cubic-bezier(0.2, 0.9, 0.2, 1) 3.4s both;
+}
+
+.splash-titel::before,
+.splash-titel::after {
+  content: attr(data-tekst);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  animation: uiteen 1.1s ease-out 3.4s both;
+}
+
+.splash-titel::before {
+  color: var(--rood);
+}
+
+.splash-titel::after {
+  color: #2f8f8f;
+}
+
+@keyframes inslaan {
+  from {
+    opacity: 0;
+    transform: scale(1.14);
+    filter: blur(9px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* De kleurranden schuiven uiteen en komen dan bijna, maar niet helemaal,
+   weer op hun plek. Dat 'bijna' is wat het onrustig houdt. */
+@keyframes uiteen {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  35% {
+    opacity: 0.85;
+    transform: translateX(var(--kant, -9px));
+  }
+  100% {
+    opacity: 0.4;
+    transform: translateX(calc(var(--kant, -9px) / 6));
+  }
+}
+
+.splash-titel::before {
+  --kant: -9px;
+}
+
+.splash-titel::after {
+  --kant: 9px;
+}
+
+.splash-streep {
+  height: 2px;
+  background: linear-gradient(90deg, var(--rood), #4a1210 70%, transparent);
+  transform-origin: left;
+  animation: uitrollen 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) 3.7s both;
+}
+
+@keyframes uitrollen {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.splash-onder {
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: #7d6b68;
+  margin: 0;
+  animation: opdoemen 1s ease-out 4.1s both;
+}
+
+/* ── De klok die doortelt ───────────────────────────────────── */
+
+.splash-klok {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  animation: opdoemen 1.2s ease-out 4.6s both;
+}
+
+.splash-kloklabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--schrift-vast);
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  color: #6a4340;
+}
+
+.splash-stip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rood);
+  animation: hartslag 2.4s ease-in-out infinite;
+}
+
+@keyframes hartslag {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.splash-kloktijd {
+  font-family: var(--schrift-vast);
+  font-size: 30px;
+  letter-spacing: 0.14em;
+  color: var(--rood);
+  font-variant-numeric: tabular-nums;
+}
+
+.splash-verder {
+  position: absolute;
+  bottom: calc(var(--veilig-onder) + 26px);
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 2;
+  font-family: var(--schrift-vast);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: #6a5a57;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.splash-verder.aan {
+  opacity: 1;
+  animation: pols 3.4s ease-in-out infinite;
+}
+
+@keyframes pols {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Stil beeld voor wie geen beweging wil. Alles staat er meteen, zonder
+   korrel, zonder ademen, zonder storing. */
+.splash.rustig .splash-adem,
+.splash.rustig .splash-korrel,
+.splash.rustig .splash-lijnen {
+  display: none;
+}
+
+.splash.rustig *,
+.splash.rustig *::before,
+.splash.rustig *::after {
+  animation: none !important;
+  opacity: 1;
+  clip-path: none;
+  filter: none;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-adem,
+  .splash-korrel,
+  .splash-lijnen {
+    display: none;
+  }
+
+  .splash *,
+  .splash *::before,
+  .splash *::after {
+    animation: none !important;
+    opacity: 1;
+    clip-path: none;
+    filter: none;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
    HET SPEELSCHERM
    ═════════════════════════════════════════════════════════════ */
 
