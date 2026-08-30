@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { Hoofdstuk } from '../verhaal/types.ts'
+import type { Hoofdstuk, Verband } from '../verhaal/types.ts'
 import type { Toestand } from '../engine/zaak.ts'
-import { conclusies } from '../engine/zaak.ts'
 
 /* ─────────────────────────────────────────────────────────────
    HET BORD
@@ -15,6 +14,14 @@ import { conclusies } from '../engine/zaak.ts'
    gewoon raster dat meebeweegt met de breedte van het scherm. Zonder die
    hermeting hangen de draadjes na het draaien van je telefoon in de
    lucht.
+
+   Let op bij het aanpassen van `meet`: hij hangt uitsluitend aan
+   `toestand.gelegd` en `toestand.verzameld`, en dat zijn arrays die
+   alleen van identiteit veranderen als er echt iets bijkomt. Hier stond
+   eerst een afgeleide lijst die elke render opnieuw werd gemaakt, en dat
+   leverde precies één ding op: meet werd elke render een nieuwe functie,
+   de layout-effect draaide elke render, zette nieuwe lijnen, en dat gaf
+   weer een render. Oneindige lus, React eruit, zwart scherm.
    ───────────────────────────────────────────────────────────── */
 
 type Lijn = { id: string; x1: number; y1: number; x2: number; y2: number }
@@ -23,6 +30,17 @@ type Props = {
   hoofdstuk: Hoofdstuk
   toestand: Toestand
   bijVerbinden: (a: string, b: string) => void
+}
+
+/** Zijn dit dezelfde draadjes op dezelfde plek? Scheelt een render. */
+function zelfde(a: Lijn[], b: Lijn[]): boolean {
+  if (a.length !== b.length) return false
+  return a.every((l, i) => {
+    const m = b[i]
+    return (
+      l.id === m.id && l.x1 === m.x1 && l.y1 === m.y1 && l.x2 === m.x2 && l.y2 === m.y2
+    )
+  })
 }
 
 export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
@@ -37,7 +55,9 @@ export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
     .map((id) => hoofdstuk.bewijs.find((b) => b.id === id))
     .filter((b): b is NonNullable<typeof b> => b !== undefined)
 
-  const gelegd = conclusies(hoofdstuk, toestand)
+  const gelegd = toestand.gelegd
+    .map((id) => hoofdstuk.verbanden.find((v) => v.id === id))
+    .filter((v): v is Verband => v !== undefined)
 
   /** Meet waar elk draadje moet lopen, in coördinaten van het bord zelf. */
   const meet = useCallback(() => {
@@ -45,7 +65,9 @@ export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
     if (!doos) return
 
     const nieuw: Lijn[] = []
-    for (const v of gelegd) {
+    for (const id of toestand.gelegd) {
+      const v = hoofdstuk.verbanden.find((x) => x.id === id)
+      if (!v) continue
       const a = kaarten.current[v.van]
       const b = kaarten.current[v.naar]
       if (!a || !b) continue
@@ -59,15 +81,17 @@ export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
         y2: kb.top - doos.top + kb.height / 2,
       })
     }
-    zetLijnen(nieuw)
-  }, [gelegd])
 
-  useLayoutEffect(meet, [meet, stukken.length])
+    zetLijnen((oud) => (zelfde(oud, nieuw) ? oud : nieuw))
+  }, [hoofdstuk, toestand.gelegd])
+
+  useLayoutEffect(meet, [meet, toestand.verzameld])
 
   useEffect(() => {
-    if (!bord.current) return
+    const vlak = bord.current
+    if (!vlak) return
     const kijker = new ResizeObserver(meet)
-    kijker.observe(bord.current)
+    kijker.observe(vlak)
     window.addEventListener('resize', meet)
     return () => {
       kijker.disconnect()

@@ -286,62 +286,64 @@ p {
 }
 
 /* ═════════════════════════════════════════════════════════════
-   HET OPSTARTSCHERM
+   HET OPSTARTSCHERM — een gang die je niet in wilt
 
    Dit is het enige scherm in het spel dat mag schrikken. Overal
-   anders is beweging hinderlijk -- hier is het de bedoeling.
+   anders is beweging hinderlijk, hier is het de bedoeling.
 
-   Regel voor de veiligheid: geen geflits. Twee storingen van een
-   tiende seconde in zes seconden, en al het andere beweegt trager
-   dan je adem. Onder prefers-reduced-motion staat alles stil.
+   Alles is CSS en één inline SVG. Er zit geen enkel plaatje in dit
+   project en dat blijft zo: de handafdruk is zes ellipsen, de gang
+   is twee gedraaide vlakken, de posters zijn divjes.
+
+   Discipline bij het schrijven: elke keyframe beschrijft alleen het
+   BEGIN. De gewone CSS is het eindbeeld. Daardoor kan één tik alle
+   opbouw-animaties simpelweg uitzetten (.gang.nu) en staat het beeld
+   meteen goed -- zonder dat de tl-buis en de ogen ophouden.
+
+   Geen stroboscoop. De lamp flikkert onregelmatig maar zwak, de ogen
+   knipperen eens per zes seconden, en onder prefers-reduced-motion
+   staat werkelijk alles stil.
    ═════════════════════════════════════════════════════════════ */
 
-.splash {
+.gang {
+  --bloed: #8d1e17;
+  --bloed-fel: #c22a1e;
+  --bot: #d6cdc6;
+
   position: fixed;
   inset: 0;
-  background: #000;
   overflow: hidden;
   cursor: pointer;
-  display: grid;
-  place-items: center;
-  padding: calc(var(--veilig-boven) + 24px) 22px calc(var(--veilig-onder) + 24px);
+  background: #05070a;
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* Het ademen: een rode gloed in de randen die traag op- en afzwelt.
-   Nooit fel, nooit snel. Je merkt het pas als je erop let. */
-.splash-adem {
-  position: absolute;
-  inset: -20%;
-  background: radial-gradient(
-    ellipse 60% 50% at 50% 50%,
-    transparent 40%,
-    rgba(120, 16, 12, 0.5) 100%
-  );
-  animation: adem 7.5s ease-in-out infinite alternate;
-}
-
-@keyframes adem {
-  from {
-    opacity: 0.35;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0.8;
-    transform: scale(1.06);
-  }
-}
-
-/* Filmkorrel. Eén SVG-ruisje als achtergrond, dat in stapjes verspringt --
-   dat leest als korrel en niet als een bewegend patroon. */
-.splash-korrel {
+/* Filmkorrel over alles heen. */
+.gang::before {
+  content: '';
   position: absolute;
   inset: -50%;
-  opacity: 0.32;
+  z-index: 6;
   pointer-events: none;
+  opacity: 0.3;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23r)'/%3E%3C/svg%3E");
-  animation: korrel 0.6s steps(3) infinite;
+  animation: korrel 0.55s steps(3) infinite;
+}
+
+/* Vignet: het beeld valt aan alle kanten weg in het donker. */
+.gang::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 62% at 50% 44%,
+    transparent 32%,
+    rgba(0, 0, 0, 0.62) 76%,
+    #000 100%
+  );
 }
 
 @keyframes korrel {
@@ -354,67 +356,549 @@ p {
   66% {
     transform: translate(2%, -3%);
   }
+}
+
+/* ── De gang ────────────────────────────────────────────────── */
+
+.gang-vloer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 85% 52% at 50% 0%, rgba(150, 175, 195, 0.075), transparent 72%),
+    linear-gradient(180deg, #080b0e 0%, #0b0e12 55%, #060809 100%);
+  animation: opdoemen 2.6s ease-out 0.2s both;
+}
+
+.gang-wand {
+  position: absolute;
+  top: -6%;
+  bottom: -6%;
+  width: 36%;
+  z-index: 1;
+  background: linear-gradient(180deg, #10151a 0%, #0b0f13 60%, #070a0d 100%);
+  animation: opdoemen 2.6s ease-out 0.2s both;
+}
+
+.gang-wand.links {
+  left: 0;
+  transform-origin: left center;
+  transform: perspective(760px) rotateY(27deg);
+  box-shadow: inset -40px 0 60px rgba(0, 0, 0, 0.8);
+}
+
+.gang-wand.rechts {
+  right: 0;
+  width: 32%;
+  transform-origin: right center;
+  transform: perspective(760px) rotateY(-27deg);
+  box-shadow: inset 40px 0 60px rgba(0, 0, 0, 0.85);
+}
+
+/* Afgebladderde verf. Onregelmatige vlekken, net iets lichter dan de wand. */
+.gang-plek {
+  position: absolute;
+  background: rgba(190, 195, 195, 0.028);
+  border-radius: 46% 54% 38% 62% / 55% 42% 58% 45%;
+}
+
+.gang-wand.links .gang-plek {
+  top: 18%;
+  left: 24%;
+  width: 40%;
+  height: 22%;
+}
+
+.gang-wand.links .gang-plek.twee {
+  top: 58%;
+  left: 8%;
+  width: 26%;
+  height: 15%;
+  opacity: 0.7;
+}
+
+.gang-wand.rechts .gang-plek {
+  top: 30%;
+  right: 14%;
+  width: 44%;
+  height: 26%;
+}
+
+/* De tl-buis. Onregelmatig, nooit fel, met lange stukken rust ertussen.
+   Een lamp die stabiel knippert is een effect; een lamp die je niet kunt
+   voorspellen is een gang. */
+.gang-tl {
+  position: absolute;
+  top: 13%;
+  left: 4%;
+  width: 20%;
+  height: 5px;
+  z-index: 2;
+  border-radius: 3px;
+  background: #cfe6f2;
+  box-shadow:
+    0 0 14px 4px rgba(178, 214, 235, 0.5),
+    0 0 70px 26px rgba(120, 165, 195, 0.22),
+    0 0 190px 90px rgba(90, 130, 160, 0.12);
+  animation: flikker 11s linear infinite;
+}
+
+@keyframes flikker {
+  0%,
+  17%,
+  19%,
+  46%,
   100% {
-    transform: translate(0, 0);
+    opacity: 0.85;
+  }
+  18% {
+    opacity: 0.28;
+  }
+  47% {
+    opacity: 0.22;
+  }
+  48% {
+    opacity: 0.8;
+  }
+  49% {
+    opacity: 0.3;
+  }
+  50%,
+  81% {
+    opacity: 0.82;
+  }
+  82% {
+    opacity: 0.25;
+  }
+  83% {
+    opacity: 0.78;
   }
 }
 
-/* Beeldlijnen van een monitor die te lang aan staat. */
-.splash-lijnen {
+/* Het koude licht dat de tl-buis de gang in gooit. */
+.gang-schijn {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.5) 0 1px,
-    transparent 1px 3px
-  );
-  opacity: 0.45;
-  animation: zakken 9s linear infinite;
-}
-
-@keyframes zakken {
-  to {
-    background-position-y: 3px;
-  }
-}
-
-.splash-inhoud {
-  position: relative;
   z-index: 2;
-  width: 100%;
-  max-width: 460px;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 46% 40% at 12% 16%,
+    rgba(150, 190, 215, 0.13),
+    transparent 70%
+  );
+}
+
+/* ── Wat er op de vloer ligt ────────────────────────────────── */
+
+.posters {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 27%;
+  height: 17%;
+  z-index: 2;
+  opacity: 0.95;
+  animation: opdoemen 2s ease-out 1.9s both;
+}
+
+.poster {
+  position: absolute;
+  width: 62px;
+  padding: 4px 5px 6px;
   display: flex;
   flex-direction: column;
-  gap: 26px;
-  animation: schok 0.4s ease-out 3.4s both;
+  gap: 3px;
+  background: linear-gradient(160deg, #b9b3a6, #8d887d);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.75);
+  opacity: 0.72;
+  filter: brightness(0.62);
 }
 
-/* De klap als de titel erin slaat. Eén keer, kort, en klein genoeg om
-   te voelen zonder dat je scherm op hol slaat. */
-@keyframes schok {
+.poster-kop {
+  font-family: var(--schrift-vast);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #17150f;
+  text-align: center;
+}
+
+.poster-vlak {
+  height: 26px;
+  background: linear-gradient(170deg, #55514a, #2e2b27);
+}
+
+.poster-regel {
+  height: 2px;
+  background: rgba(24, 22, 17, 0.55);
+}
+
+.poster-regel.kort {
+  width: 60%;
+}
+
+/* ── De deuropening ─────────────────────────────────────────── */
+
+.deurblok {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 7%;
+  width: min(58vw, 285px);
+  height: min(54vh, 430px);
+  transform: translateX(-50%);
+}
+
+/* Het zwarte gat achter de deur. Bijna niets, en juist daar kijk je naar. */
+.deurgat {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #010203, #000 60%);
+  box-shadow: inset 0 0 60px 10px #000;
+  border-left: 2px solid #16110e;
+  border-top: 2px solid #16110e;
+}
+
+.gezicht {
+  position: absolute;
+  right: 1%;
+  top: 20%;
+  width: 56px;
+  height: 76px;
+  border-radius: 50% 50% 46% 46%;
+  background: radial-gradient(
+    ellipse 62% 56% at 50% 42%,
+    rgba(214, 206, 200, 0.26),
+    rgba(150, 145, 142, 0.08) 58%,
+    transparent 74%
+  );
+  animation: opdoemen 3.4s ease-out 4.2s both;
+}
+
+.oog {
+  position: absolute;
+  top: 38%;
+  width: 10px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #ff6a52, #8d1a12 72%);
+  box-shadow: 0 0 9px 2px rgba(255, 70, 50, 0.55);
+  animation: knipper 6.5s ease-in-out 5.5s infinite;
+}
+
+.oog.links {
+  left: 24%;
+}
+
+.oog.rechts {
+  right: 24%;
+}
+
+@keyframes knipper {
+  0%,
+  6%,
+  100% {
+    transform: scaleY(1);
+  }
+  2.5% {
+    transform: scaleY(0.06);
+  }
+}
+
+/* De deur zelf: hij staat naar je toe open, dus de linkerkant is dichtbij
+   en de rechterkant loopt het donker in. */
+.deur {
+  position: absolute;
+  inset: 0;
+  width: 73%;
+  transform-origin: left center;
+  transform: perspective(1150px) rotateY(-34deg);
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 7px),
+    linear-gradient(100deg, #3b332c 0%, #2b241f 45%, #191411 100%);
+  border: 1px solid #14100d;
+  box-shadow:
+    -18px 0 40px rgba(0, 0, 0, 0.7),
+    inset 0 0 70px rgba(0, 0, 0, 0.55);
+  animation: deuropen 2.4s ease-out 0.9s both;
+}
+
+@keyframes deuropen {
+  from {
+    opacity: 0;
+    transform: perspective(1150px) rotateY(-13deg);
+  }
+}
+
+.paneel-boven,
+.paneel-onder {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 230, 200, 0.04);
+}
+
+.paneel-boven {
+  top: 7%;
+  height: 30%;
+}
+
+.paneel-onder {
+  bottom: 7%;
+  height: 30%;
+}
+
+.kruk {
+  position: absolute;
+  right: 4%;
+  top: 50%;
+  width: 30%;
+  height: 7px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #8c8377, #4a443c 60%, #2a2621);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+/* De handafdruk. Zes ellipsen, meer is het niet. */
+.handafdruk {
+  position: absolute;
+  left: 26%;
+  top: 40%;
+  width: 40%;
+  color: var(--bloed);
+  opacity: 0.82;
+  filter: blur(0.5px);
+  animation: afdruk 1s ease-out 2.6s both;
+}
+
+@keyframes afdruk {
+  from {
+    opacity: 0;
+    transform: scale(1.22);
+  }
+}
+
+/* Wat er onderuit loopt. Groeit traag, en houdt dan op. */
+.druppel {
+  position: absolute;
+  width: 3px;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(180deg, var(--bloed), rgba(90, 16, 12, 0));
+  animation: druipen 4.5s ease-out 3.1s both;
+}
+
+.druppel.een {
+  left: 34%;
+  top: 68%;
+  height: 62px;
+}
+
+.druppel.twee {
+  left: 46%;
+  top: 71%;
+  height: 96px;
+  animation-delay: 3.5s;
+}
+
+.druppel.drie {
+  left: 56%;
+  top: 67%;
+  height: 44px;
+  animation-delay: 4.1s;
+}
+
+@keyframes druipen {
+  from {
+    height: 0;
+  }
+}
+
+/* ── Titel en menu ──────────────────────────────────────────── */
+
+.voorgrond::before {
+  content: '';
+  position: absolute;
+  inset: -70px -40px -60px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 62% at 50% 55%,
+    rgba(0, 0, 0, 0.9) 30%,
+    transparent 78%
+  );
+}
+
+.voorgrond {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--veilig-onder) + 22px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.bloedtitel {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  font-size: clamp(34px, 11.5vw, 66px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  animation: inslaan 0.55s cubic-bezier(0.2, 0.9, 0.2, 1) 3.6s both;
+}
+
+/* Elke letter net iets scheef, en met dunne verticale krassen erdoor.
+   Dat leest als geschreven, niet als gezet. */
+.bloedtitel span {
+  display: inline-block;
+  background: linear-gradient(180deg, #ded5cf 0%, #a83024 62%, #6d130e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  filter: drop-shadow(0 3px 7px rgba(0, 0, 0, 0.95));
+}
+
+.bloedtitel span:nth-child(1) {
+  transform: rotate(-3deg) translateY(2px);
+}
+.bloedtitel span:nth-child(2) {
+  transform: rotate(2deg) translateY(-2px);
+}
+.bloedtitel span:nth-child(3) {
+  transform: rotate(-1.5deg) translateY(3px);
+}
+.bloedtitel span:nth-child(4) {
+  transform: rotate(3deg);
+}
+.bloedtitel span:nth-child(5) {
+  transform: rotate(-2.5deg) translateY(-1px);
+}
+.bloedtitel span:nth-child(6) {
+  transform: rotate(1.5deg) translateY(2px);
+}
+.bloedtitel span:nth-child(7) {
+  transform: rotate(-2deg) translateY(-2px);
+}
+
+.bloedtitel span:nth-child(2)::after,
+.bloedtitel span:nth-child(6)::after {
+  content: '';
+  position: absolute;
+  top: 96%;
+  width: 2px;
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(180deg, #8c2519, rgba(110, 20, 14, 0));
+}
+
+.bloedtitel span:nth-child(2)::after {
+  left: 32%;
+  height: 20px;
+}
+
+.bloedtitel span:nth-child(6)::after {
+  left: 58%;
+  height: 32px;
+}
+
+@keyframes inslaan {
+  from {
+    opacity: 0;
+    transform: scale(1.13);
+    filter: blur(8px);
+  }
+}
+
+.bloedonder {
+  margin: 0;
+  font-family: var(--schrift-vast);
+  font-size: clamp(9px, 2.6vw, 12px);
+  letter-spacing: 0.34em;
+  color: #8a7c76;
+  animation: opdoemen 1.4s ease-out 4.2s both;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 12px;
+  animation: opdoemen 1.4s ease-out 4.7s both;
+}
+
+.menuknop {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--bot);
+  font-family: var(--schrift-vast);
+  font-size: 17px;
+  letter-spacing: 0.3em;
+  padding: 11px 26px;
+  cursor: pointer;
+  transition: color 0.15s ease, letter-spacing 0.2s ease;
+}
+
+.menuknop:hover,
+.menuknop:focus-visible {
+  color: var(--bloed-fel);
+  letter-spacing: 0.38em;
+  outline: none;
+}
+
+.menuknop.klein {
+  font-size: 11px;
+  color: #6f6560;
+  letter-spacing: 0.24em;
+}
+
+.menuknop.klein:hover {
+  color: #a08a84;
+}
+
+.gangklok {
+  position: absolute;
+  z-index: 8;
+  top: calc(var(--veilig-boven) + 14px);
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--schrift-vast);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  color: #7d3830;
+  animation: opdoemen 1.4s ease-out 5.2s both;
+}
+
+.gangklok-stip {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--bloed-fel);
+  animation: hartslag 2.4s ease-in-out infinite;
+}
+
+@keyframes hartslag {
   0%,
   100% {
-    transform: translate(0, 0);
+    opacity: 0.2;
   }
-  20% {
-    transform: translate(-3px, 2px);
+  50% {
+    opacity: 1;
   }
-  45% {
-    transform: translate(3px, -2px);
-  }
-  70% {
-    transform: translate(-2px, -1px);
-  }
-}
-
-.splash-eenheid {
-  font-family: var(--schrift-vast);
-  font-size: 10px;
-  letter-spacing: 0.34em;
-  color: #6a4340;
-  margin: 0;
-  animation: opdoemen 1.4s ease-out 0.3s both;
 }
 
 @keyframes opdoemen {
@@ -423,265 +907,29 @@ p {
   }
 }
 
-/* ── De dossierkop ──────────────────────────────────────────── */
-
-.splash-kop {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  border-left: 1px solid #3a1a18;
-  padding-left: 14px;
-}
-
-.splash-regel {
-  display: grid;
-  grid-template-columns: 116px 1fr;
-  gap: 12px;
-  align-items: baseline;
-  animation: inklikken 0.5s steps(4, end) both;
-}
-
-/* In stapjes en niet vloeiend: het moet aanvoelen als een systeem dat
-   regels uitspuugt, niet als een presentatie die opent. */
-@keyframes inklikken {
-  from {
-    opacity: 0;
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-.splash-regel dt {
-  font-family: var(--schrift-vast);
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  color: #5c4441;
-  margin: 0;
-}
-
-.splash-regel dd {
-  font-family: var(--schrift-vast);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: #b9a8a4;
-  margin: 0;
-}
-
-/* De storing. Twee keer, een tiende seconde. Je weet niet zeker of je
-   het gezien hebt, en dat is precies de bedoeling. */
-.splash-regel dd.splash-storing {
-  color: var(--rood);
-  text-shadow: 2px 0 rgba(75, 214, 214, 0.9), -2px 0 rgba(214, 69, 59, 0.9);
-  transform: translateX(-2px) skewX(-6deg);
-}
-
-/* ── De titel ───────────────────────────────────────────────── */
-
-.splash-titelblok {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.splash-titel {
-  position: relative;
-  font-size: clamp(46px, 17vw, 78px);
-  line-height: 0.94;
-  letter-spacing: 0.16em;
-  margin: 0;
-  color: #efe6e4;
-  animation: inslaan 0.5s cubic-bezier(0.2, 0.9, 0.2, 1) 3.4s both;
-}
-
-.splash-titel::before,
-.splash-titel::after {
-  content: attr(data-tekst);
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  animation: uiteen 1.1s ease-out 3.4s both;
-}
-
-.splash-titel::before {
-  color: var(--rood);
-}
-
-.splash-titel::after {
-  color: #2f8f8f;
-}
-
-@keyframes inslaan {
-  from {
-    opacity: 0;
-    transform: scale(1.14);
-    filter: blur(9px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-}
-
-/* De kleurranden schuiven uiteen en komen dan bijna, maar niet helemaal,
-   weer op hun plek. Dat 'bijna' is wat het onrustig houdt. */
-@keyframes uiteen {
-  0% {
-    opacity: 0;
-    transform: translateX(0);
-  }
-  35% {
-    opacity: 0.85;
-    transform: translateX(var(--kant, -9px));
-  }
-  100% {
-    opacity: 0.4;
-    transform: translateX(calc(var(--kant, -9px) / 6));
-  }
-}
-
-.splash-titel::before {
-  --kant: -9px;
-}
-
-.splash-titel::after {
-  --kant: 9px;
-}
-
-.splash-streep {
-  height: 2px;
-  background: linear-gradient(90deg, var(--rood), #4a1210 70%, transparent);
-  transform-origin: left;
-  animation: uitrollen 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) 3.7s both;
-}
-
-@keyframes uitrollen {
-  from {
-    transform: scaleX(0);
-  }
-}
-
-.splash-onder {
-  font-size: 14px;
-  letter-spacing: 0.16em;
-  color: #7d6b68;
-  margin: 0;
-  animation: opdoemen 1s ease-out 4.1s both;
-}
-
-/* ── De klok die doortelt ───────────────────────────────────── */
-
-.splash-klok {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  animation: opdoemen 1.2s ease-out 4.6s both;
-}
-
-.splash-kloklabel {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--schrift-vast);
-  font-size: 9px;
-  letter-spacing: 0.26em;
-  color: #6a4340;
-}
-
-.splash-stip {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--rood);
-  animation: hartslag 2.4s ease-in-out infinite;
-}
-
-@keyframes hartslag {
-  0%,
-  100% {
-    opacity: 0.25;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.splash-kloktijd {
-  font-family: var(--schrift-vast);
-  font-size: 30px;
-  letter-spacing: 0.14em;
-  color: var(--rood);
-  font-variant-numeric: tabular-nums;
-}
-
-.splash-verder {
-  position: absolute;
-  bottom: calc(var(--veilig-onder) + 26px);
-  left: 0;
-  right: 0;
-  text-align: center;
-  z-index: 2;
-  font-family: var(--schrift-vast);
-  font-size: 11px;
-  letter-spacing: 0.24em;
-  color: #6a5a57;
-  margin: 0;
-  opacity: 0;
-  transition: opacity 1.4s ease;
-}
-
-.splash-verder.aan {
-  opacity: 1;
-  animation: pols 3.4s ease-in-out infinite;
-}
-
-@keyframes pols {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* Stil beeld voor wie geen beweging wil. Alles staat er meteen, zonder
-   korrel, zonder ademen, zonder storing. */
-.splash.rustig .splash-adem,
-.splash.rustig .splash-korrel,
-.splash.rustig .splash-lijnen {
-  display: none;
-}
-
-.splash.rustig *,
-.splash.rustig *::before,
-.splash.rustig *::after {
-  animation: none !important;
-  opacity: 1;
-  clip-path: none;
-  filter: none;
-  transform: none;
+/* Eén tik zet de hele opbouw op het eindbeeld. De tl-buis, de ogen en de
+   hartslag lopen door -- die staan met opzet op andere elementen, zodat
+   deze regel ze niet raakt. */
+.gang.nu .gang-vloer,
+.gang.nu .gang-wand,
+.gang.nu .posters,
+.gang.nu .deur,
+.gang.nu .handafdruk,
+.gang.nu .druppel,
+.gang.nu .gezicht,
+.gang.nu .bloedtitel,
+.gang.nu .bloedonder,
+.gang.nu .menu,
+.gang.nu .gangklok {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .splash-adem,
-  .splash-korrel,
-  .splash-lijnen {
-    display: none;
-  }
-
-  .splash *,
-  .splash *::before,
-  .splash *::after {
+  .gang::before,
+  .gang *,
+  .gang *::before,
+  .gang *::after {
     animation: none !important;
-    opacity: 1;
-    clip-path: none;
-    filter: none;
   }
 }
 

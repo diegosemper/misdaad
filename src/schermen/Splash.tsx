@@ -3,45 +3,39 @@ import { useEffect, useState } from 'react'
 /* ─────────────────────────────────────────────────────────────
    HET OPSTARTSCHERM
 
-   Volledig zwart, en het blijft even zwart -- langer dan comfortabel is.
-   Dan komt er regel voor regel een dossierkop binnen, alsof ergens een
-   oud politiesysteem staat in te loggen. Daarna slaat de titel erin.
+   Een gang die je niet in wilt. De deur staat op een kier, er zit een
+   handafdruk op, en in het donker erachter staat iemand.
 
-   Drie dingen doen het werk:
+   Wat het werk doet:
 
-   1. Het ademen. Een rode gloed in de randen die traag op- en afzwelt.
-      Nooit fel, nooit snel -- je merkt het pas als je erop let, en dan
-      kun je het niet meer níet zien.
+   · De ogen. Ze komen niet meteen. Je kijkt eerst naar de deur, naar de
+     handafdruk, naar de posters op de vloer -- en pas als je bijna
+     doorhebt dat er iets mist, staan ze er. Eén keer knipperen is genoeg.
+   · De tl-buis. Onregelmatig, nooit fel, met lange stukken rust ertussen.
+     Een lamp die stabiel knippert is een effect; een lamp die je niet
+     kunt voorspellen is een gang.
+   · De klok. Begint op zestien uur -- zo lang is ze weg als jij het
+     dossier krijgt -- en loopt door zolang je kijkt.
 
-   2. De storing. Twee keer, heel kort, springt de statusregel om naar
-      wat er over een week op staat. Je weet niet zeker of je het gezien
-      hebt. Dat is precies de bedoeling: het spel weet al hoe dit afloopt
-      en jij nog niet.
+   Alles is CSS en inline SVG. Er zit nog steeds geen enkel plaatje in dit
+   project; de handafdruk is een handvol ellipsen.
 
-   3. De klok. Hij begint op zestien uur -- zo lang is ze weg als jij het
-      dossier krijgt -- en loopt door zolang je kijkt. Terwijl jij nadenkt
-      over of je wel zin hebt, loopt hij door.
-
-   Geen geflits, geen stroboscoop: twee storingen van een tiende seconde
-   in vijf seconden, en de rest beweegt traag. Alles is te overslaan met
-   één tik, en wie prefers-reduced-motion aan heeft staan krijgt het
-   eindbeeld meteen en stil. Een opstartscherm dat je niet weg kunt
-   klikken is geen sfeer maar een sta-in-de-weg.
+   Eén tik ergens in beeld zet de hele opbouw meteen op het eindbeeld, en
+   onder prefers-reduced-motion staat het er stil vanaf de eerste frame.
    ───────────────────────────────────────────────────────────── */
-
-const REGELS: Array<[string, string]> = [
-  ['DOSSIER', '2026-0417'],
-  ['STATUS', 'VERMISSING — MINDERJARIG'],
-  ['BETREFT', 'DE VRIES, MARIT — 17 JAAR'],
-  ['LAATST GEZIEN', 'ZA 11 OKT 23:12 — KERMISVELD'],
-  ['TOEGEWEZEN AAN', 'U'],
-]
-
-/** Wat er over een week op die regel staat. Even. */
-const STORING = 'OVERLEDEN — NIET GEVONDEN'
 
 /** Zestien uur, in seconden. Zo lang is ze weg als het dossier bij jou komt. */
 const VOORSPRONG = 16 * 3600
+
+/** Wat er op de vloer ligt. Vier keer hetzelfde meisje, vier keer verwaaid. */
+const POSTERS = [
+  { links: "2%", onder: "4%", draai: -14, schaal: 1 },
+  { links: "13%", onder: "17%", draai: 8, schaal: 0.8 },
+  { links: "24%", onder: "2%", draai: -5, schaal: 0.9 },
+  { links: "62%", onder: "3%", draai: 12, schaal: 0.92 },
+  { links: "74%", onder: "16%", draai: -8, schaal: 0.78 },
+  { links: "86%", onder: "5%", draai: 17, schaal: 0.86 },
+]
 
 function klokTekst(seconden: number): string {
   const twee = (n: number) => String(n).padStart(2, '0')
@@ -57,26 +51,14 @@ export default function Splash({ bijVerder }: { bijVerder: () => void }) {
     typeof matchMedia === 'function' &&
     matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  const [klaar, zetKlaar] = useState(rustig)
-  const [storing, zetStoring] = useState(false)
+  const [nu, zetNu] = useState(rustig)
+  const [waarschuwing, zetWaarschuwing] = useState(false)
   const [tellen, zetTellen] = useState(VOORSPRONG)
 
   useEffect(() => {
     if (rustig) return
-
-    const klokken: number[] = []
-    const zet = (ms: number, doe: () => void) =>
-      klokken.push(window.setTimeout(doe, ms))
-
-    // Twee korte storingen. Kort genoeg om aan jezelf te twijfelen.
-    zet(3100, () => zetStoring(true))
-    zet(3210, () => zetStoring(false))
-    zet(4700, () => zetStoring(true))
-    zet(4790, () => zetStoring(false))
-
-    zet(6200, () => zetKlaar(true))
-
-    return () => klokken.forEach(clearTimeout)
+    const klok = setTimeout(() => zetNu(true), 7000)
+    return () => clearTimeout(klok)
   }, [rustig])
 
   useEffect(() => {
@@ -86,58 +68,136 @@ export default function Splash({ bijVerder }: { bijVerder: () => void }) {
 
   return (
     <div
-      className={'splash' + (rustig ? ' rustig' : '')}
-      onClick={bijVerder}
-      role="button"
-      tabIndex={0}
-      aria-label="Begin"
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') bijVerder()
-      }}
+      className={'gang' + (nu ? ' nu' : '')}
+      onClick={() => zetNu(true)}
+      role="presentation"
     >
-      <div className="splash-adem" aria-hidden="true" />
-      <div className="splash-korrel" aria-hidden="true" />
-      <div className="splash-lijnen" aria-hidden="true" />
+      <div className="gangklok">
+        <span className="gangklok-stip" aria-hidden="true" />
+        VERMIST SINDS {klokTekst(tellen)}
+      </div>
 
-      <div className="splash-inhoud">
-        <p className="splash-eenheid">POLITIE · EENHEID OOST-NEDERLAND</p>
+      {/* ── De gang zelf ────────────────────────────────── */}
+      <div className="gang-vloer" aria-hidden="true" />
+      <div className="gang-wand links" aria-hidden="true">
+        <span className="gang-plek" />
+        <span className="gang-plek twee" />
+      </div>
+      <div className="gang-wand rechts" aria-hidden="true">
+        <span className="gang-plek" />
+      </div>
+      <div className="gang-tl" aria-hidden="true" />
+      <div className="gang-schijn" aria-hidden="true" />
 
-        <dl className="splash-kop">
-          {REGELS.map(([label, waarde], i) => {
-            const isStatus = label === 'STATUS'
-            return (
-              <div
-                key={label}
-                className="splash-regel"
-                style={{ animationDelay: `${0.9 + i * 0.44}s` }}
-              >
-                <dt>{label}</dt>
-                <dd className={isStatus && storing ? 'splash-storing' : undefined}>
-                  {isStatus && storing ? STORING : waarde}
-                </dd>
-              </div>
-            )
-          })}
-        </dl>
+      {/* ── Wat er op de vloer ligt ─────────────────────── */}
+      <div className="posters" aria-hidden="true">
+        {POSTERS.map((p, i) => (
+          <div
+            key={i}
+            className="poster"
+            style={{
+              left: p.links,
+              bottom: p.onder,
+              transform: `rotate(${p.draai}deg) scale(${p.schaal})`,
+            }}
+          >
+            <span className="poster-kop">VERMIST</span>
+            <span className="poster-vlak" />
+            <span className="poster-regel" />
+            <span className="poster-regel kort" />
+          </div>
+        ))}
+      </div>
 
-        <div className="splash-titelblok">
-          <h1 className="splash-titel" data-tekst="MISDAAD">
-            MISDAAD
-          </h1>
-          <div className="splash-streep" aria-hidden="true" />
-          <p className="splash-onder">een zaak in Westerveld</p>
+      {/* ── De deuropening ──────────────────────────────── */}
+      <div className="deurblok">
+        <div className="deurgat" aria-hidden="true">
+          <div className="gezicht">
+            <span className="oog links" />
+            <span className="oog rechts" />
+          </div>
         </div>
 
-        <div className="splash-klok">
-          <span className="splash-kloklabel">
-            <span className="splash-stip" aria-hidden="true" />
-            VERMIST SINDS
-          </span>
-          <span className="splash-kloktijd">{klokTekst(tellen)}</span>
+        <div className="deur" aria-hidden="true">
+          <span className="paneel-boven" />
+          <span className="paneel-onder" />
+          <span className="kruk" />
+
+          <svg className="handafdruk" viewBox="0 0 100 120" aria-hidden="true">
+            <g fill="currentColor">
+              <ellipse cx="50" cy="92" rx="30" ry="23" />
+              <rect x="25" y="30" width="13" height="50" rx="6.5" transform="rotate(-7 31 55)" />
+              <rect x="43" y="22" width="14" height="58" rx="7" />
+              <rect x="62" y="30" width="13" height="50" rx="6.5" transform="rotate(7 68 55)" />
+              <rect x="78" y="46" width="11" height="38" rx="5.5" transform="rotate(19 83 65)" />
+              <rect x="4" y="58" width="12" height="36" rx="6" transform="rotate(-36 10 76)" />
+            </g>
+          </svg>
+
+          <span className="druppel een" />
+          <span className="druppel twee" />
+          <span className="druppel drie" />
         </div>
       </div>
 
-      <p className={'splash-verder' + (klaar ? ' aan' : '')}>tik om te beginnen</p>
+      {/* ── Titel en menu ───────────────────────────────── */}
+      <div className="voorgrond">
+        <h1 className="bloedtitel">
+          {'MISDAAD'.split('').map((letter, i) => (
+            <span key={i} style={{ ['--n' as string]: i }}>
+              {letter}
+            </span>
+          ))}
+        </h1>
+        <p className="bloedonder">EEN ZAAK IN WESTERVELD</p>
+
+        <div className="menu">
+          <button
+            className="menuknop"
+            onClick={(e) => {
+              e.stopPropagation()
+              bijVerder()
+            }}
+          >
+            START
+          </button>
+          <button
+            className="menuknop klein"
+            onClick={(e) => {
+              e.stopPropagation()
+              zetWaarschuwing(true)
+            }}
+          >
+            WAARSCHUWING
+          </button>
+        </div>
+
+      </div>
+
+      {waarschuwing && (
+        <div
+          className="overlay"
+          onClick={(e) => {
+            e.stopPropagation()
+            zetWaarschuwing(false)
+          }}
+        >
+          <div className="opdrachtkaart" onClick={(e) => e.stopPropagation()}>
+            <p className="stempel">Voor je begint</p>
+            <h2>Waar dit over gaat</h2>
+            <p>
+              Dit spel gaat over de dood van een minderjarige. Het bevat geweld,
+              seksueel misbruik van een minderjarige door een volwassene, misbruik
+              van vertrouwen en grof taalgebruik. Er is geen expliciet beeld — wel
+              expliciete tekst.
+            </p>
+            <p>Het is bedoeld voor volwassen spelers.</p>
+            <button className="knop hoofd" onClick={() => zetWaarschuwing(false)}>
+              Begrepen
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
