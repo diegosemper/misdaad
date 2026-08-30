@@ -1,0 +1,11 @@
+{
+  "name": "MISDAAD",
+  "short_name": "MISDAAD",
+  "description": "Een zaak in Westerveld.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e1114",
+  "theme_color": "#0e1114"
+}

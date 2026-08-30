@@ -1,0 +1,286 @@
+/* ─────────────────────────────────────────────────────────────
+   MISDAAD — vormgeving
+
+   Ontwerpregels, want dit is het tegenovergestelde van DORST!:
+   · hier wordt wél gelezen, urenlang → rustige regelafstand, geen schreeuw
+   · koud en donker; kleur gebruiken we spaarzaam, juist daarom valt hij op
+   · kleur = betekenis: rood is een draad/verband, amber is nieuw,
+     groen is bevestigd, papier is een document
+   · mobiel eerst — de telefoon in het spel is even breed als je echte scherm
+   · alles is CSS, er bestaat geen enkel plaatje in dit project
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --achtergrond: #0d1013;
+  --vlak: #171c22;
+  --vlak-hoog: #212932;
+  --vlak-diep: #10151a;
+  --rand: #303a45;
+  --rand-zacht: #232b34;
+
+  --tekst: #e6ebf0;
+  --tekst-zacht: #8a97a6;
+  --tekst-flauw: #5c6773;
+
+  --rood: #d6453b;
+  --rood-donker: #45120f;
+  --amber: #e6a94c;
+  --amber-donker: #4a3410;
+  --groen: #3ea968;
+  --groen-donker: #12341f;
+  --blauw: #4b8fd6;
+
+  --papier: #d9d0bd;
+  --papier-rand: #b9ad93;
+  --papier-tekst: #221f19;
+
+  --straal: 14px;
+  --straal-klein: 8px;
+
+  --veilig-onder: env(safe-area-inset-bottom, 0px);
+  --veilig-boven: env(safe-area-inset-top, 0px);
+
+  --schrift: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  --schrift-vast: ui-monospace, 'Cascadia Mono', 'Consolas', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(75, 143, 214, 0.1), transparent 70%),
+    linear-gradient(180deg, #131920 0%, #0d1013 60%);
+  background-color: var(--achtergrond);
+  background-attachment: fixed;
+  color: var(--tekst);
+  font-family: var(--schrift);
+  font-size: 16px;
+  line-height: 1.5;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+.geen-selectie {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Structuur ──────────────────────────────────────────────── */
+
+.scherm {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: calc(var(--veilig-boven) + 16px) 18px calc(var(--veilig-onder) + 18px);
+  gap: 16px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.midden {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.onderaan {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rij {
+  display: flex;
+  gap: 10px;
+}
+
+.rij > * {
+  flex: 1;
+}
+
+/* ── Tekst ──────────────────────────────────────────────────── */
+
+h1 {
+  font-size: 46px;
+  line-height: 1;
+  margin: 0;
+  letter-spacing: 0.14em;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 15px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tekst-zacht);
+}
+
+p {
+  margin: 0;
+}
+
+.zacht {
+  color: var(--tekst-zacht);
+}
+
+.flauw {
+  color: var(--tekst-flauw);
+}
+
+.klein {
+  font-size: 13px;
+}
+
+.stempel {
+  font-family: var(--schrift-vast);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tekst-flauw);
+}
+
+/* ── Knoppen ────────────────────────────────────────────────── */
+
+.knop {
+  appearance: none;
+  border: 1px solid var(--rand);
+  background: var(--vlak-hoog);
+  color: var(--tekst);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 18px;
+  border-radius: var(--straal-klein);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
+}
+
+.knop:hover {
+  background: #2a333e;
+}
+
+.knop:active {
+  transform: translateY(1px);
+}
+
+.knop:disabled {
+  opacity: 0.4;
+  cursor: default;
+  transform: none;
+}
+
+.knop.hoofd {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #1a1206;
+}
+
+.knop.hoofd:hover {
+  background: #f0b75c;
+}
+
+.knop.gevaar {
+  background: transparent;
+  border-color: var(--rood-donker);
+  color: var(--rood);
+}
+
+.knop.kaal {
+  background: transparent;
+  border-color: transparent;
+  color: var(--tekst-zacht);
+  font-weight: 500;
+}
+
+.knop.kaal:hover {
+  background: var(--vlak);
+  color: var(--tekst);
+}
+
+/* ── Waarschuwing op het startscherm ────────────────────────── */
+
+.waarschuwing {
+  border: 1px solid var(--rood-donker);
+  border-left: 3px solid var(--rood);
+  background: rgba(214, 69, 59, 0.07);
+  border-radius: var(--straal-klein);
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--tekst-zacht);
+}
+
+.waarschuwing strong {
+  color: var(--rood);
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* ── Dossierregel (de titelkaart van de zaak) ───────────────── */
+
+.dossier {
+  border: 1px solid var(--rand-zacht);
+  background: var(--vlak);
+  border-radius: var(--straal);
+  padding: 18px;
+  text-align: left;
+  width: 100%;
+}
+
+.dossier dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 16px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.dossier dt {
+  color: var(--tekst-flauw);
+  font-family: var(--schrift-vast);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+
+.dossier dd {
+  margin: 0;
+}
+
+/* ── Versieregel onderaan ───────────────────────────────────── */
+
+.versie {
+  text-align: center;
+  font-size: 11px;
+  color: var(--tekst-flauw);
+  font-family: var(--schrift-vast);
+  letter-spacing: 0.1em;
+}
