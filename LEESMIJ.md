@@ -90,6 +90,23 @@ In `src/verhaal/h1/WAARHEID.md` staat minuut voor minuut wat er die avond echt
 gebeurde, en wat elk personage weet, verzwijgt en denkt. Alle bewijsstukken
 worden daaruit afgeleid. **Lees dat niet als je nog wilt spelen.**
 
+### Eigen beeld toevoegen
+
+Het spel tekent al zijn beeld zelf met CSS, zodat het overal draait zonder
+bestanden. Maar overal waar een echt beeld hoort, kun je er een neerzetten en
+dan wint dat.
+
+| Zet neer als | Wat het wordt |
+|---|---|
+| `public/gang.jpg` | de achtergrond van het opstartscherm |
+| `public/bewijs/<bewijs-id>.jpg` | het beeld bij dat bewijsstuk |
+
+Welke bewijs-id's beeld kunnen krijgen staat in `public/bewijs/LEESMIJ.txt`.
+
+Er hoeft niets in de code te veranderen: de app probeert het bestand te laden
+en valt terug op de getekende versie als het er niet is. Je kunt ze dus een
+voor een toevoegen, en het spel gaat er nooit stuk van.
+
 ### `npm run controleer`
 
 Kijkt de zaak na: verwijst elk verband naar bestaand bewijs, is elke fase

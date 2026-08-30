@@ -315,8 +315,32 @@ p {
   overflow: hidden;
   cursor: pointer;
   background: #05070a;
+  background-size: cover;
+  background-position: center;
   user-select: none;
   -webkit-user-select: none;
+}
+
+/* Terwijl we nog niet weten of public/gang.jpg bestaat: zwart. Anders
+   zie je de getekende gang een fractie oplichten voordat de foto hem
+   overneemt, en dat is precies één frame te veel. */
+.gang.wacht {
+  cursor: default;
+}
+
+/* Met een echte foto hoeft er veel minder bij: minder korrel, een
+   lichter vignet, en geen getekende gang eronder. */
+.gang.metfoto::before {
+  opacity: 0.12;
+}
+
+.gang.metfoto::after {
+  background: radial-gradient(
+    ellipse 78% 70% at 50% 42%,
+    transparent 42%,
+    rgba(0, 0, 0, 0.5) 82%,
+    rgba(0, 0, 0, 0.86) 100%
+  );
 }
 
 /* Filmkorrel over alles heen. */
@@ -425,6 +449,42 @@ p {
   right: 14%;
   width: 44%;
   height: 26%;
+}
+
+/* Graffiti. Geen tekens, alleen vegen -- op deze afstand en in dit
+   donker lees je toch niets, en een leesbare tag zou juist afleiden. */
+.graffiti {
+  position: absolute;
+  border-radius: 40% 60% 55% 45% / 60% 40% 60% 40%;
+  filter: blur(1.5px);
+  mix-blend-mode: screen;
+  opacity: 0.16;
+}
+
+.graffiti.een {
+  top: 34%;
+  left: 12%;
+  width: 46%;
+  height: 9%;
+  background: linear-gradient(90deg, #6b3fae, #2f6fae);
+}
+
+.graffiti.twee {
+  top: 46%;
+  left: 30%;
+  width: 30%;
+  height: 6%;
+  background: linear-gradient(90deg, #ae3f5c, #6b3fae);
+  opacity: 0.11;
+}
+
+.graffiti.drie {
+  top: 52%;
+  right: 18%;
+  width: 40%;
+  height: 8%;
+  background: linear-gradient(90deg, #2f6fae, #3fae7a);
+  opacity: 0.1;
 }
 
 /* De tl-buis. Onregelmatig, nooit fel, met lange stukken rust ertussen.
@@ -721,41 +781,56 @@ p {
 
 /* ── Titel en menu ──────────────────────────────────────────── */
 
-.voorgrond::before {
-  content: '';
-  position: absolute;
-  inset: -70px -40px -60px;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse 70% 62% at 50% 55%,
-    rgba(0, 0, 0, 0.9) 30%,
-    transparent 78%
-  );
-}
-
 .voorgrond {
   position: absolute;
   z-index: 5;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--veilig-onder) + 22px);
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--veilig-boven) + 5vh) 16px calc(var(--veilig-onder) + 4vh);
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Alleen de knoppen vangen kliks. De rest van dit vlak ligt over de
+   scène heen en moet de tik-om-over-te-slaan doorlaten. */
+.voorgrond button {
+  pointer-events: auto;
+}
+
+.kopblok {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 0 16px;
-  text-align: center;
+}
+
+/* Een schaduw achter de tekst, want op een foto is elke ondergrond
+   anders en moet de titel het overal winnen. */
+.kopblok::before,
+.menu::before {
+  content: '';
+  position: absolute;
+  inset: -60px -50px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 62% 58% at 50% 50%,
+    rgba(0, 0, 0, 0.82) 28%,
+    transparent 76%
+  );
 }
 
 .bloedtitel {
   display: flex;
   justify-content: center;
   margin: 0;
-  font-size: clamp(34px, 11.5vw, 66px);
+  font-size: clamp(40px, 14vw, 92px);
   font-weight: 900;
   line-height: 1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.03em;
   animation: inslaan 0.55s cubic-bezier(0.2, 0.9, 0.2, 1) 3.6s both;
 }
 
@@ -831,10 +906,12 @@ p {
 }
 
 .menu {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-top: 12px;
+  margin-top: auto;
+  margin-bottom: 6vh;
   animation: opdoemen 1.4s ease-out 4.7s both;
 }
 
@@ -871,7 +948,7 @@ p {
 .gangklok {
   position: absolute;
   z-index: 8;
-  top: calc(var(--veilig-boven) + 14px);
+  bottom: calc(var(--veilig-onder) + 14px);
   right: 14px;
   display: flex;
   align-items: center;
@@ -1514,19 +1591,166 @@ p {
   white-space: pre-wrap;
 }
 
-/* Een 'foto' is hier een grijs vlak met een beschrijving eronder. Er
-   bestaat geen enkel plaatje in dit project, en een beschreven beeld is
-   in een dossier trouwens onheilspellender dan een echte afdruk. */
-.beeldvlak {
-  height: 150px;
-  border: 1px solid #b0a48a;
+/* ── Beeldmateriaal ─────────────────────────────────────────
+   Is er een bestand (public/bewijs/<id>.jpg), dan zie je dat. Anders een
+   getekende beeldkaart: donker, met beeldlijnen, hoekhaken en de
+   tijdcode erop. Het verschil met het grijze vlak dat hier eerst stond,
+   is dat dit eruitziet als een uitdraai en niet als iets wat stuk is. */
+
+.beeld {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.beeld-foto {
+  display: block;
+  width: 100%;
+  border: 1px solid #6d6552;
+  background: #14120f;
+}
+
+.beeld-tijd {
+  font-family: var(--schrift-vast);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #6d6552;
+}
+
+.beeldkaart {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 9px 10px;
+  overflow: hidden;
+  border: 1px solid #1d1a16;
   background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.09) 0 2px,
-      rgba(0, 0, 0, 0.04) 2px 4px
-    ),
-    linear-gradient(160deg, #8f8a7d, #4f4c46);
+    radial-gradient(ellipse 70% 60% at 50% 42%, #23211d, #0c0b0a 78%),
+    #0c0b0a;
+  color: #7c7568;
+  font-family: var(--schrift-vast);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+}
+
+/* Korrel, zodat het vlak niet dood is. */
+.beeldkaart::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23b)'/%3E%3C/svg%3E");
+}
+
+.beeld-lijnen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.5) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.55;
+}
+
+.beeld-hoek {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(190, 180, 160, 0.28);
+}
+
+.beeld-hoek.linksboven {
+  top: 7px;
+  left: 7px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.beeld-hoek.rechtsboven {
+  top: 7px;
+  right: 7px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.beeld-hoek.linksonder {
+  bottom: 7px;
+  left: 7px;
+  border-right: none;
+  border-top: none;
+}
+
+.beeld-hoek.rechtsonder {
+  bottom: 7px;
+  right: 7px;
+  border-left: none;
+  border-top: none;
+}
+
+.beeld-strip {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 12px;
+}
+
+.beeld-strip.onder {
+  align-items: flex-end;
+}
+
+.beeld-strip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.beeld-geen {
+  flex: none;
+  color: #4e483f;
+}
+
+.beeld-midden {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.beeld-rec {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #9a5148;
+}
+
+.beeld-stip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rood);
+  animation: hartslag 2.2s ease-in-out infinite;
+}
+
+/* Een camerabeeld is kouder en donkerder dan een telefoonfoto. */
+.beeldkaart.camera {
+  background:
+    radial-gradient(ellipse 80% 65% at 50% 45%, #1b2024, #07090b 80%),
+    #07090b;
+  color: #6d7a82;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beeld-stip {
+    animation: none;
+  }
 }
 
 /* ── Codeslot ───────────────────────────────────────────────── */

@@ -1,0 +1,24 @@
+BEELD BIJ BEWIJSSTUKKEN
+=======================
+
+Zet hier een bestand neer met de naam van het bewijs-id en de app pakt het
+vanzelf op. Er hoeft niets in de code te veranderen.
+
+  d-camera-2312.jpg    Camerabeeld snackbar Van Elst, 23:12
+  f-selfie-1938.jpg    Selfie met Sanne, onderweg
+  f-botsauto.jpg       Botsauto's
+  f-zweefmolen.jpg     Bij de zweefmolen
+  f-scherm-joost.jpg   Schermafdruk, 2 mei
+
+Staat een bestand er niet, dan tekent het spel zelf een beeldkaart met de
+bron en de tijdcode erop. Het spel gaat dus nooit stuk van een ontbrekend
+bestand -- je kunt ze een voor een toevoegen.
+
+De beschrijving in src/verhaal/h1/bewijs.ts blijft altijd onder het beeld
+staan. Die vertelt wat je moet zien; het beeld is de sfeer eromheen.
+
+Alleen .jpg. Houd ze klein (onder de 300 kB per stuk) -- dit wordt op
+telefoons gespeeld, vaak over mobiel internet.
+
+De achtergrondfoto van het opstartscherm hoort een map hoger:
+public/gang.jpg

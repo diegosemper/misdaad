@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import type { Bewijs } from '../../verhaal/types.ts'
 import type { Toestand } from '../../engine/zaak.ts'
+import Beeld from '../Beeld'
 
 /* Alles wat geen chat is: dossierstukken, foto's, oproepen, notities,
    verhoren. Eén weergave voor allemaal, want een verhoor lezen en een
    camerabeeld bekijken is voor de speler dezelfde handeling.
 
-   Foto's hebben geen bestand -- er bestaat geen enkel plaatje in dit
-   project. Wat je ziet is een lijst met een beschrijving, zoals een
-   rechercheur een beeld in een dossier beschreven krijgt. Dat leest
-   trouwens onheilspellender dan een plaatje ooit zou doen. */
+   Foto's en camerabeelden laten een echt bestand zien als dat er is
+   (public/bewijs/<id>.jpg) en anders een getekende beeldkaart met de
+   bron en de tijdcode erop. Zie Beeld.tsx. De beschrijving eronder
+   blijft in beide gevallen staan -- die doet het eigenlijke werk. */
 
 const TEKENS: Record<string, string> = {
   bericht: '💬',
@@ -75,7 +76,7 @@ export default function Stukken({ stukken, toestand, bijOppakken }: Props) {
           {stuk.tijd ? ` · ${stuk.tijd}` : ''}
         </p>
         <h2 className="papier-titel">{stuk.titel}</h2>
-        {stuk.soort === 'foto' && <div className="beeldvlak" aria-hidden="true" />}
+        {stuk.soort === 'foto' && <Beeld stuk={stuk} />}
         {stuk.inhoud.split('\n\n').map((alinea, i) => (
           <p key={i} className="papier-tekst">
             {alinea}
