@@ -1,26 +1,35 @@
 import type { Taak } from '../types.ts'
 
-/* ─────────────────────────────────────────────────────────────
-   DE TAKENLIJST
+/* ────────────────────────────────────────────────────────────
+   DE OPDRACHTEN
 
-   Dit is het verschil tussen "ik weet niet wat ik moet doen" en "nog
-   even dit". De lijst staat altijd in beeld en werkt bij zodra je iets
-   vindt -- je ziet een regel doorstreept worden op het moment dat je een
-   draadje legt.
+   Er staat er altijd precies één op het scherm. Is die af, dan komt de
+   volgende. Dit is dus geen lijst maar een volgorde, en daarmee doet de
+   volgorde er ineens toe.
 
-   Twee regels bij het schrijven:
+   Drie regels bij het schrijven:
 
-   1. Een taak is een vraag of een doel, nooit een instructie. "Ga na of
-      Joost de tijd had" mag. "Verbind de kassa-uitdraai met de verklaring
-      van Marloes" is het spel voor de speler spelen.
+   1. Een opdracht is een vraag of een doel, nooit een instructie. "Ga na
+      of Joost de tijd had" mag. "Verbind de kassa-uitdraai met de
+      verklaring van Marloes" is het spel voor de speler spelen.
 
-   2. Niet elk verband krijgt een taak. De dragende lijn staat erop plus
-      een enkel zijspoor; de rest mag je zelf vinden. Een lijst waar
-      álles op staat is geen onderzoek meer maar een boodschappenlijstje.
+   2. Een opdracht moet te doen zijn op het moment dat hij verschijnt.
+      Alles wat ervoor nodig is moet in deze fase of een eerdere binnen te
+      halen zijn -- anders staart de speler naar een regel waar hij niets
+      mee kan, en de volgende komt pas als deze af is.
 
-   Taken van eerdere fases die nog openstaan blijven zichtbaar, met hun
-   fasenummer erbij. Je mag ze laten liggen -- ze houden je nergens tegen.
-   ───────────────────────────────────────────────────────────── */
+   3. Wat een fase opent, moet in een eerdere fase gevraagd zijn. Anders
+      verschijnt de opdracht die je verder helpt pas nadat je hem al
+      gedaan hebt.
+
+   scripts/controleer.mjs kijkt punt 2 en 3 allebei na. Dat is geen luxe:
+   t-lijst stond hier eerst in fase 4, terwijl fase 4 pas opengaat als die
+   opdracht al gedaan is.
+
+   Niet elk verband krijgt een opdracht. De dragende lijn plus een enkel
+   zijspoor; de rest mag je zelf vinden. Een spel dat alles vraagt is geen
+   onderzoek meer maar een boodschappenlijstje.
+   ──────────────────────────────────────────────────────────── */
 
 export const taken: Taak[] = [
   /* ── Fase 1: de laatste avond ────────────────────────────── */
@@ -130,14 +139,14 @@ export const taken: Taak[] = [
     tekst: 'Kom in de beveiligde notitie-app — zij koos die code zelf',
     klaarBij: ['slot-notities'],
   },
-
-  /* ── Fase 4: wie wist het en deed niets ──────────────────── */
   {
     id: 't-lijst',
-    laag: 4,
+    laag: 3,
     tekst: 'Zoek uit of ze de eerste was',
     klaarBij: ['v-niet-de-eerste'],
   },
+
+  /* ── Fase 4: wie wist het en deed niets ──────────────────── */
   {
     id: 't-verteld',
     laag: 4,

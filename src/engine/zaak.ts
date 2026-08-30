@@ -225,6 +225,22 @@ export function taken(h: Hoofdstuk, t: Toestand): { open: Taak[]; af: Taak[] } {
 }
 
 /**
+ * De ene opdracht die nu op het scherm hoort.
+ *
+ * Niet een lijst maar één regel: zolang je bezig bent moet er precies één
+ * ding zijn waar je aan werkt. De volgorde in src/verhaal/h1/taken.ts is
+ * daarmee ineens belangrijk geworden -- een taak die daar te vroeg staat
+ * hangt de speler voor zijn neus terwijl hij hem nog niet kan doen.
+ * scripts/controleer.mjs kijkt die volgorde na.
+ *
+ * Taken die je onderweg per ongeluk al afgevinkt hebt worden overgeslagen;
+ * je krijgt altijd de eerste die nog openstaat.
+ */
+export function huidigeTaak(h: Hoofdstuk, t: Toestand): Taak | null {
+  return taken(h, t).open[0] ?? null
+}
+
+/**
  * Hoeveel van de zaak is af?
  *
  * Bewust op verbanden gebaseerd en niet op bewijs: bewijs verzamelen is

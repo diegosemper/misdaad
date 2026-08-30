@@ -1,20 +1,28 @@
 import { useState } from 'react'
 import type { Hoofdstuk } from '../verhaal/types.ts'
 import type { Toestand } from '../engine/zaak.ts'
-import { taken } from '../engine/zaak.ts'
+import { huidigeTaak, magBeschuldigen, taken } from '../engine/zaak.ts'
 
-/* Wat je nu moet uitzoeken. Staat altijd in beeld en werkt bij op het
-   moment dat je een draadje legt -- je ziet een regel doorstrepen
-   terwijl je kijkt.
+/* ─────────────────────────────────────────────────────────────
+   DE OPDRACHT
 
-   Alleen open taken staan er standaard, want een lijst waar ook alle
-   afgeronde regels op blijven staan wordt binnen een uur langer dan het
-   scherm. De afgeronde zitten achter één regel, zodat je wel kunt
-   terugzien wat je al gehad hebt.
+   Eén regel. Niet een lijst van zes, want dan lees je ze allemaal, kies
+   je er niks uit en heb je alsnog het gevoel dat je niet weet waar je
+   moet beginnen. Er is altijd precies één ding waar je aan werkt, en
+   zodra dat af is staat het volgende er.
 
-   Taken uit eerdere fases krijgen hun fasenummer mee. Ze houden je
-   nergens tegen; ze staan er zodat een zijspoor dat je hebt laten liggen
-   niet stilletjes uit beeld verdwijnt. */
+   Daardoor doet de volgorde in src/verhaal/h1/taken.ts er ineens toe: de
+   opdracht die er staat moet met wat je nú hebt te doen zijn.
+   scripts/controleer.mjs speelt de zaak na en kijkt precies dat na.
+
+   De teller ernaast is er voor het gevoel dat het ergens heen gaat. Wie
+   wil zien wat hij al gehad heeft klapt hem open; dat staat dicht, want
+   het gaat om die ene regel.
+
+   De `key` op de regel is geen detail: hij zorgt dat React het element
+   opnieuw opbouwt zodra de opdracht wisselt, zodat je de nieuwe ziet
+   binnenkomen in plaats van dat de tekst stilletjes verspringt.
+   ───────────────────────────────────────────────────────────── */
 
 type Props = {
   hoofdstuk: Hoofdstuk
@@ -22,70 +30,51 @@ type Props = {
 }
 
 export default function Takenlijst({ hoofdstuk, toestand }: Props) {
-  const [uitgeklapt, zetUitgeklapt] = useState(true)
   const [toonAf, zetToonAf] = useState(false)
 
-  const { open, af } = taken(hoofdstuk, toestand)
+  const taak = huidigeTaak(hoofdstuk, toestand)
+  const { af } = taken(hoofdstuk, toestand)
+  const totaal = hoofdstuk.taken.length
+
+  /* Er moet altijd iets staan. Is alles van deze fase gedaan maar mag je
+     nog niet beschuldigen, dan wacht je op de volgende fase -- zeg dat
+     dan ook, in plaats van een lege balk te tonen. */
+  const tekst = taak
+    ? taak.tekst
+    : magBeschuldigen(hoofdstuk, toestand)
+      ? 'Wijs de dader aan en onderbouw het met drie bewijsstukken'
+      : 'Leg de verbanden die je nog mist — de volgende fase komt vanzelf'
 
   return (
-    <section className="takenlijst">
-      <button
-        className="takenkop"
-        onClick={() => zetUitgeklapt((x) => !x)}
-        aria-expanded={uitgeklapt}
-      >
-        <span className="takenpijl" aria-hidden="true">
-          {uitgeklapt ? '▾' : '▸'}
+    <section className="opdrachtbalk">
+      <div className="opdrachtregel" key={taak?.id ?? 'einde'}>
+        <span className="opdrachtvak" aria-hidden="true" />
+        <span className="opdrachttekst">
+          <span className="opdrachtlabel">Te doen</span>
+          {tekst}
         </span>
-        <span className="takentitel">Te doen</span>
-        <span className="takenteller">{open.length}</span>
-        {!uitgeklapt && open.length > 0 && (
-          <span className="takenvoorproefje">{open[0].tekst}</span>
-        )}
-      </button>
+        <button
+          className="opdrachtteller"
+          onClick={() => zetToonAf((x) => !x)}
+          aria-expanded={toonAf}
+          aria-label={`${af.length} van ${totaal} afgerond`}
+        >
+          {af.length}/{totaal}
+        </button>
+      </div>
 
-      {uitgeklapt && (
-        <>
-          <ul className="taken">
-            {open.map((taak) => (
-              <li key={taak.id} className="taak">
-                <span className="taakvak" aria-hidden="true" />
-                <span className="taaktekst">
-                  {taak.laag < toestand.laag && (
-                    <span className="taakfase">fase {taak.laag}</span>
-                  )}
-                  {taak.tekst}
-                </span>
-              </li>
-            ))}
-            {open.length === 0 && (
-              <li className="taak leeg">
-                Alles van deze fase is uitgezocht. Er komt iets binnen zodra je
-                verder bent.
-              </li>
-            )}
-          </ul>
-
-          {af.length > 0 && (
-            <>
-              <button className="takenaf" onClick={() => zetToonAf((x) => !x)}>
-                {toonAf ? 'Verberg' : 'Toon'} {af.length} afgerond
-              </button>
-              {toonAf && (
-                <ul className="taken">
-                  {af.map((taak) => (
-                    <li key={taak.id} className="taak gedaan">
-                      <span className="taakvak vol" aria-hidden="true">
-                        ✓
-                      </span>
-                      <span className="taaktekst">{taak.tekst}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </>
-          )}
-        </>
+      {toonAf && (
+        <ul className="gedaanlijst">
+          {af.length === 0 && <li className="gedaan leeg">Nog niets afgerond.</li>}
+          {[...af].reverse().map((t) => (
+            <li key={t.id} className="gedaan">
+              <span className="gedaanvink" aria-hidden="true">
+                ✓
+              </span>
+              {t.tekst}
+            </li>
+          ))}
+        </ul>
       )}
     </section>
   )

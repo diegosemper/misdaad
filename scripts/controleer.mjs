@@ -109,17 +109,36 @@ let t = beginToestand(zaak)
 let veranderd = true
 let rondes = 0
 
+// In welke fase kwam elk id binnen? Nodig om de volgorde van de
+// takenlijst na te kijken: er staat maar één opdracht tegelijk op het
+// scherm, dus die moet te doen zijn met wat je op dat moment hebt.
+const faseVan = new Map()
+
+let faseBijRondeStart = 1
+
+/** Voer een handeling uit en noteer wat er nieuw bij kwam, in welke fase. */
+function doe(nieuweToestand) {
+  const voor = faseBijRondeStart
+  for (const sleutel of ['verzameld', 'gelegd', 'gekraakt']) {
+    for (const id of nieuweToestand[sleutel]) {
+      if (!faseVan.has(id)) faseVan.set(id, voor)
+    }
+  }
+  t = nieuweToestand
+  veranderd = true
+}
+
 while (veranderd && rondes < 500) {
   veranderd = false
   rondes++
+  faseBijRondeStart = t.laag
 
   // Alles oppakken wat in een zichtbare app ligt.
   for (const b of zaak.bewijs) {
     if (t.verzameld.includes(b.id)) continue
     if (!t.beschikbaar.includes(b.id)) continue
     if (b.app && !t.beschikbaar.includes(b.app)) continue
-    t = pakOp(zaak, t, b.id).toestand
-    veranderd = true
+    doe(pakOp(zaak, t, b.id).toestand)
   }
 
   // Alles markeren in gesprekken die open staan.
@@ -129,8 +148,7 @@ while (veranderd && rondes < 500) {
     for (const bericht of g.berichten) {
       for (const id of bericht.levert ?? []) {
         if (t.verzameld.includes(id)) continue
-        t = pakOp(zaak, t, id).toestand
-        veranderd = true
+        doe(pakOp(zaak, t, id).toestand)
       }
     }
   }
@@ -138,8 +156,7 @@ while (veranderd && rondes < 500) {
   for (const v of zaak.verbanden) {
     if (t.gelegd.includes(v.id)) continue
     if (!t.verzameld.includes(v.van) || !t.verzameld.includes(v.naar)) continue
-    t = verbind(zaak, t, v.van, v.naar).toestand
-    veranderd = true
+    doe(verbind(zaak, t, v.van, v.naar).toestand)
   }
 
   for (const s of zaak.sloten) {
@@ -150,8 +167,7 @@ while (veranderd && rondes < 500) {
     const app = appVanSlot.get(s.id)
     if (!t.verzameld.includes(s.hintIn)) continue
     if (!app || !t.beschikbaar.includes(app)) continue
-    t = kraak(zaak, t, s.id, s.code).toestand
-    veranderd = true
+    doe(kraak(zaak, t, s.id, s.code).toestand)
   }
 }
 
@@ -213,6 +229,37 @@ for (const laag of zaak.lagen) {
   if (!zaak.taken.some((taak) => taak.laag === laag.nr)) {
     waarschuwingen.push(`fase ${laag.nr} (${laag.titel}) heeft geen enkele taak`)
   }
+}
+
+// Er staat maar één opdracht tegelijk op het scherm. Een taak die in een
+// eerdere fase staat dan waarin hij te doen is, hangt de speler dus voor
+// zijn neus terwijl hij er niets mee kan -- en omdat de volgende opdracht
+// pas komt als deze af is, zit hij daar ook nog eens aan vast.
+//
+// Dit is precies de fout die t-lijst had: hij stond in fase 4, terwijl
+// fase 4 pas opengaat als die taak al gedaan is.
+// En andersom: wat een fase opent moet je in een eerdere fase te doen
+// hebben gekregen. Anders staat de opdracht die je verder helpt pas op je
+// scherm nadat je hem al gedaan hebt, en heeft de speler die fase op eigen
+// houtje moeten uitzoeken zonder dat het spel er iets over zei.
+for (const laag of zaak.lagen) {
+  if (laag.nr === 1) continue
+  for (const id of laag.eist) {
+    const vroeger = zaak.taken.some((t2) => t2.klaarBij.includes(id) && t2.laag < laag.nr)
+    eis(
+      vroeger,
+      `fase ${laag.nr} gaat open door ${id}, maar geen enkele taak uit een eerdere ` +
+        `fase vraagt daarom -- de speler wordt daar nooit heen gestuurd`,
+    )
+  }
+}
+
+for (const taak of zaak.taken) {
+  const nodig = Math.max(...taak.klaarBij.map((id) => faseVan.get(id) ?? 99))
+  eis(
+    taak.laag >= nodig,
+    `taak ${taak.id} staat in fase ${taak.laag} maar is pas te doen in fase ${nodig}`,
+  )
 }
 
 // ── 5. De ontknoping moet te onderbouwen zijn ─────────────────

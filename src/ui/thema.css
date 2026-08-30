@@ -1108,141 +1108,118 @@ p {
   font-size: 11px;
 }
 
-/* ── De takenlijst ──────────────────────────────────────────── */
+/* ── De opdracht ────────────────────────────────────────────
+   Eén regel, altijd in beeld, direct onder de tabbladen. Hij mag
+   opvallen: dit is het enige op het scherm dat zegt wat je nu moet
+   doen. Vandaar het amber randje links -- dezelfde kleur die overal
+   in dit spel "hier moet je zijn" betekent. */
 
-.takenlijst {
+.opdrachtbalk {
   flex: none;
   background: var(--vlak-diep);
   border-bottom: 1px solid var(--rand-zacht);
-  max-height: 34vh;
+  max-height: 40vh;
   overflow-y: auto;
 }
 
-.takenkop {
-  appearance: none;
-  width: 100%;
+.opdrachtregel {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: none;
-  color: var(--tekst-zacht);
-  font-family: inherit;
-  padding: 10px 16px;
-  cursor: pointer;
-  text-align: left;
+  gap: 12px;
+  padding: 13px 16px;
+  border-left: 3px solid var(--amber);
+  animation: opdrachtin 0.35s ease-out both;
 }
 
-.takenpijl {
-  color: var(--tekst-flauw);
-  font-size: 11px;
+/* De nieuwe opdracht komt binnen in plaats van dat de tekst verspringt.
+   Werkt door de key in Takenlijst.tsx: React bouwt het element opnieuw
+   op zodra de opdracht wisselt, dus de animatie speelt opnieuw af. */
+@keyframes opdrachtin {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
 }
 
-.takentitel {
-  font-family: var(--schrift-vast);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.opdrachtvak {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  border: 2px solid var(--amber);
+  border-radius: 4px;
 }
 
-.takenteller {
-  background: var(--amber-donker);
-  color: var(--amber);
-  border-radius: 10px;
-  padding: 1px 8px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.takenvoorproefje {
+.opdrachttekst {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
-  color: var(--tekst-flauw);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.taken {
-  list-style: none;
-  margin: 0;
-  padding: 0 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--tekst);
 }
 
-.taak {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.taak.leeg {
-  color: var(--tekst-flauw);
-  font-size: 13px;
-  padding-left: 2px;
-}
-
-.taakvak {
-  flex: none;
-  width: 15px;
-  height: 15px;
-  margin-top: 2px;
-  border: 1px solid var(--rand);
-  border-radius: 3px;
-}
-
-.taakvak.vol {
-  display: grid;
-  place-items: center;
-  border-color: var(--groen-donker);
-  background: var(--groen-donker);
-  color: var(--groen);
-  font-size: 10px;
-}
-
-.taaktekst {
-  min-width: 0;
-}
-
-.taak.gedaan .taaktekst {
-  color: var(--tekst-flauw);
-  text-decoration: line-through;
-  text-decoration-color: var(--rand);
-}
-
-.taakfase {
-  display: inline-block;
-  margin-right: 7px;
+.opdrachtlabel {
   font-family: var(--schrift-vast);
   font-size: 9px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--tekst-flauw);
-  border: 1px solid var(--rand-zacht);
-  border-radius: 3px;
-  padding: 1px 5px;
-  vertical-align: 2px;
+  color: var(--amber);
 }
 
-.takenaf {
+.opdrachtteller {
+  flex: none;
   appearance: none;
   background: transparent;
-  border: none;
+  border: 1px solid var(--rand-zacht);
+  border-radius: 10px;
   color: var(--tekst-flauw);
-  font-family: inherit;
-  font-size: 12px;
-  padding: 0 16px 12px;
+  font-family: var(--schrift-vast);
+  font-size: 11px;
+  padding: 3px 9px;
   cursor: pointer;
-  text-align: left;
 }
 
-.takenaf:hover {
+.opdrachtteller:hover {
   color: var(--tekst-zacht);
+  border-color: var(--rand);
+}
+
+.gedaanlijst {
+  list-style: none;
+  margin: 0;
+  padding: 0 16px 14px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.gedaan {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--tekst-flauw);
+  text-decoration: line-through;
+  text-decoration-color: var(--rand-zacht);
+}
+
+.gedaan.leeg {
+  text-decoration: none;
+}
+
+.gedaanvink {
+  flex: none;
+  color: var(--groen);
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opdrachtregel {
+    animation: none;
+  }
 }
 
 /* ── De twee kolommen ───────────────────────────────────────── */
