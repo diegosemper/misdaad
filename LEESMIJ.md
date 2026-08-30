@@ -100,9 +100,10 @@ worden daaruit afgeleid. **Lees dat niet als je nog wilt spelen.**
 
 ### Eigen beeld toevoegen
 
-Het spel tekent al zijn beeld zelf met CSS, zodat het overal draait zonder
-bestanden. Maar overal waar een echt beeld hoort, kun je er een neerzetten en
-dan wint dat.
+Het spel tekent al zijn beeld zelf -- de foto's en camerabeelden zijn SVG-scenes
+in `src/ui/beelden.tsx`, met silhouetten en overbelichte flitsvlekken in plaats
+van getekende gezichten. Je ziet dus altijd iets. Zet je een echt bestand neer,
+dan wint dat van de tekening.
 
 | Zet neer als | Wat het wordt |
 |---|---|

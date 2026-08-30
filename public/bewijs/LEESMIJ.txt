@@ -10,9 +10,12 @@ vanzelf op. Er hoeft niets in de code te veranderen.
   f-zweefmolen.jpg     Bij de zweefmolen
   f-scherm-joost.jpg   Schermafdruk, 2 mei
 
-Staat een bestand er niet, dan tekent het spel zelf een beeldkaart met de
-bron en de tijdcode erop. Het spel gaat dus nooit stuk van een ontbrekend
-bestand -- je kunt ze een voor een toevoegen.
+Voor alle vijf tekent het spel zelf al een scene in SVG, dus je ziet altijd
+iets. Zet je hier een bestand neer, dan wint dat van de tekening. Je kunt ze
+dus een voor een vervangen zonder dat er tussentijds iets stukgaat.
+
+De tekeningen staan in src/ui/beelden.tsx. Een bewijsstuk zonder tekening en
+zonder bestand krijgt een beeldkaart met alleen de bron en de tijdcode.
 
 De beschrijving in src/verhaal/h1/bewijs.ts blijft altijd onder het beeld
 staan. Die vertelt wat je moet zien; het beeld is de sfeer eromheen.

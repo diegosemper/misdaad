@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react'
 import type { Bewijs } from '../verhaal/types.ts'
+import { BEELDEN, SchermJoost } from './beelden'
 
 /* ─────────────────────────────────────────────────────────────
    BEELDMATERIAAL
 
-   Foto's en camerabeelden werken hetzelfde als het opstartscherm:
-   bestaat het bestand, dan zie je het, en anders zie je een lijst.
+   Drie mogelijkheden, in deze volgorde:
 
-   Zet een bestand neer als public/bewijs/<id>.jpg -- dus bijvoorbeeld
-   public/bewijs/d-camera-2312.jpg -- en dat beeld verschijnt vanzelf bij
-   dat bewijsstuk. Er hoeft niets in de code te veranderen.
+   1. Staat er een echt bestand als public/bewijs/<id>.jpg, dan wint dat.
+      Er hoeft niets in de code te veranderen om er een toe te voegen.
+   2. Is er een getekende scène voor dit bewijsstuk (zie beelden.tsx),
+      dan zie je die. Dat geldt voor alle vijf de beelden in hoofdstuk 1.
+   3. Anders een beeldkaart met de bron en de tijdcode erop -- voor
+      nieuwe bewijsstukken die nog geen tekening hebben.
 
-   Zonder bestand krijg je geen leeg grijs vlak meer maar een echte
-   beeldkaart: een donkere still met beeldlijnen, hoekhaken, de bron en de
-   tijdcode erbij. Dat leest als een uitdraai uit een dossier in plaats
-   van als iets wat niet geladen is. De beschrijving eronder blijft
-   staan; die dóet het werk.
+   Punt 1 en 2 door elkaar heen kan: je kunt de scènes een voor een
+   vervangen door echte foto's zonder dat er iets stukgaat.
    ───────────────────────────────────────────────────────────── */
 
 function pad(id: string): string {
@@ -38,7 +38,6 @@ export default function Beeld({ stuk }: { stuk: Bewijs }) {
     }
   }, [stuk.id])
 
-  const isCamera = /camera|beveiliging/i.test(stuk.bron + stuk.titel)
   const stempel = [stuk.dag, stuk.tijd].filter(Boolean).join('  ')
 
   if (staat === 'ja') {
@@ -50,8 +49,28 @@ export default function Beeld({ stuk }: { stuk: Bewijs }) {
     )
   }
 
-  // Nog aan het laden, of er is geen bestand: in beide gevallen de
-  // getekende beeldkaart. Tussenstand overslaan zou een flikkering geven.
+  if (stuk.id === 'f-scherm-joost') {
+    return (
+      <figure className="beeld">
+        <SchermJoost />
+      </figure>
+    )
+  }
+
+  const Scene = BEELDEN[stuk.id]
+  if (Scene) {
+    return (
+      <figure className="beeld">
+        <div className="scenevlak">
+          <Scene id={stuk.id} />
+        </div>
+      </figure>
+    )
+  }
+
+  // Nog geen tekening voor dit stuk: dan de kale beeldkaart.
+  const isCamera = /camera|beveiliging/i.test(stuk.bron + stuk.titel)
+
   return (
     <div className={'beeldkaart' + (isCamera ? ' camera' : '')}>
       <span className="beeld-hoek linksboven" aria-hidden="true" />
@@ -65,14 +84,7 @@ export default function Beeld({ stuk }: { stuk: Bewijs }) {
         <span>{stempel}</span>
       </span>
 
-      <span className="beeld-midden">
-        {isCamera && (
-          <span className="beeld-rec">
-            <span className="beeld-stip" aria-hidden="true" />
-            REC
-          </span>
-        )}
-      </span>
+      <span className="beeld-midden" />
 
       <span className="beeld-strip onder">
         <span>{stuk.bron}</span>
