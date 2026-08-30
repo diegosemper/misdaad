@@ -112,6 +112,22 @@ export type Laag = {
   opdracht: string
 }
 
+/**
+ * Eén regel op de takenlijst.
+ *
+ * De tekst is altijd een vraag of een doel, nooit een instructie. "Ga na
+ * of Joost de tijd had" mag; "verbind de kassa-uitdraai met de verklaring
+ * van Marloes" is het spel voor de speler spelen.
+ */
+export type Taak = {
+  id: string
+  /** In welke fase hij verschijnt. */
+  laag: number
+  tekst: string
+  /** Verband-, slot- of bewijs-id's. Heb je ze allemaal, dan is de taak af. */
+  klaarBij: string[]
+}
+
 export type Persoon = {
   id: string
   naam: string
@@ -137,6 +153,7 @@ export type Hoofdstuk = {
   verbanden: Verband[]
   sloten: Slot[]
   lagen: Laag[]
+  taken: Taak[]
   /** Id's die vanaf het begin beschikbaar zijn. */
   begin: string[]
   /** Wie je mag aanwijzen. Volgorde is de volgorde op het scherm. */

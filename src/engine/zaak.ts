@@ -11,7 +11,7 @@
    niets in wat aan de code vastzit.
    ───────────────────────────────────────────────────────────── */
 
-import type { Hoofdstuk, Laag, Verband } from '../verhaal/types.ts'
+import type { Hoofdstuk, Laag, Taak, Verband } from '../verhaal/types.ts'
 
 export type Toestand = {
   /** Id's van apps, gesprekken en bewijs die in het apparaat te vinden zijn. */
@@ -200,6 +200,28 @@ export function conclusies(h: Hoofdstuk, t: Toestand): Verband[] {
   return t.gelegd
     .map((id) => h.verbanden.find((v) => v.id === id))
     .filter((v): v is Verband => v !== undefined)
+}
+
+/** Heeft de speler dit id binnen, op welke manier dan ook? */
+export function heeft(t: Toestand, id: string): boolean {
+  return t.gelegd.includes(id) || t.gekraakt.includes(id) || t.verzameld.includes(id)
+}
+
+/**
+ * De takenlijst zoals hij nu op het scherm hoort te staan.
+ *
+ * Taken van eerdere fases die nog openstaan blijven erbij, met hun eigen
+ * fasenummer. Ze houden niemand tegen -- je mag ze laten liggen -- maar
+ * ze verdwijnen niet stiekem uit beeld, want dan lijkt het alsof je iets
+ * gemist hebt zonder te weten wat.
+ */
+export function taken(h: Hoofdstuk, t: Toestand): { open: Taak[]; af: Taak[] } {
+  const zichtbaar = h.taken.filter((taak) => taak.laag <= t.laag)
+  const isAf = (taak: Taak) => taak.klaarBij.every((id) => heeft(t, id))
+  return {
+    open: zichtbaar.filter((taak) => !isAf(taak)),
+    af: zichtbaar.filter(isAf),
+  }
 }
 
 /**

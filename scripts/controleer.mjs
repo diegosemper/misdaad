@@ -181,6 +181,40 @@ for (const g of zaak.gesprekken) {
   }
 }
 
+// ── 4b. De takenlijst moet af te vinken zijn ──────────────────
+// Een taak die nooit afgaat is erger dan geen taak: de speler blijft
+// zoeken naar iets wat er niet is.
+const taakIds = new Set()
+const verbandIds = new Set(zaak.verbanden.map((v) => v.id))
+
+for (const taak of zaak.taken) {
+  eis(!taakIds.has(taak.id), `taak-id komt twee keer voor: ${taak.id}`)
+  taakIds.add(taak.id)
+
+  eis(taak.klaarBij.length > 0, `taak ${taak.id} gaat nooit af -- klaarBij is leeg`)
+  eis(
+    zaak.lagen.some((l) => l.nr === taak.laag),
+    `taak ${taak.id} hoort bij fase ${taak.laag}, en die bestaat niet`,
+  )
+
+  for (const id of taak.klaarBij) {
+    eis(
+      bewijsIds.has(id) || verbandIds.has(id) || slotIds.has(id),
+      `taak ${taak.id} wacht op iets onbekends: ${id}`,
+    )
+    eis(
+      t.verzameld.includes(id) || t.gelegd.includes(id) || t.gekraakt.includes(id),
+      `taak ${taak.id} kan nooit afgevinkt worden: ${id} is onbereikbaar`,
+    )
+  }
+}
+
+for (const laag of zaak.lagen) {
+  if (!zaak.taken.some((taak) => taak.laag === laag.nr)) {
+    waarschuwingen.push(`fase ${laag.nr} (${laag.titel}) heeft geen enkele taak`)
+  }
+}
+
 // ── 5. De ontknoping moet te onderbouwen zijn ─────────────────
 const dragend = [zaak.dader.bewijsA, zaak.dader.bewijsB, zaak.dader.bewijsC]
 
@@ -225,7 +259,7 @@ eis(
 console.log(
   `· ${zaak.bewijs.length} bewijsstukken, ${zaak.verbanden.length} verbanden, ` +
     `${zaak.sloten.length} sloten, ${zaak.gesprekken.length} gesprekken, ` +
-    `${zaak.lagen.length} lagen`,
+    `${zaak.lagen.length} fases, ${zaak.taken.length} taken`,
 )
 
 for (const w of waarschuwingen) console.log(`  let op: ${w}`)

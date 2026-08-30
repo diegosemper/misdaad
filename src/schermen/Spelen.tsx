@@ -12,6 +12,7 @@ import {
 } from '../engine/zaak.ts'
 import Telefoon from '../ui/Telefoon'
 import Prikbord from '../ui/Prikbord'
+import Takenlijst from '../ui/Takenlijst'
 
 /* Het speelscherm. Geeft de toestand door aan de twee panelen en zet de
    meldingen om in briefjes onderin.
@@ -120,6 +121,8 @@ export default function Spelen({
           )}
         </button>
       </nav>
+
+      <Takenlijst hoofdstuk={hoofdstuk} toestand={toestand} />
 
       <main className="panelen">
         <div className={'kolom' + (tab === 'telefoon' ? ' aan' : '')}>

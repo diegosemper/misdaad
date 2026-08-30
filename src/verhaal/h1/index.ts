@@ -5,6 +5,7 @@ import { bewijs } from './bewijs.ts'
 import { verbanden } from './verbanden.ts'
 import { sloten } from './sloten.ts'
 import { lagen } from './lagen.ts'
+import { taken } from './taken.ts'
 
 import { sanne } from './gesprekken/sanne.ts'
 import { tim } from './gesprekken/tim.ts'
@@ -27,6 +28,7 @@ export const hoofdstuk1: Hoofdstuk = {
   verbanden,
   sloten,
   lagen,
+  taken,
 
   /* Waar je mee begint: vier apps, vier gesprekken en de stukken die de
      recherche in de eerste zestien uur zelf al had. De rest verdien je. */
