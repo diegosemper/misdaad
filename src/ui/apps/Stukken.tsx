@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Bewijs } from '../../verhaal/types.ts'
 import type { Toestand } from '../../engine/zaak.ts'
+import type { Wijzer } from '../../engine/wijzer.ts'
 import Beeld from '../Beeld'
 
 /* Alles wat geen chat is: dossierstukken, foto's, oproepen, notities,
@@ -24,11 +25,12 @@ const TEKENS: Record<string, string> = {
 
 type Props = {
   stukken: Bewijs[]
+  wijzer: Wijzer
   toestand: Toestand
   bijOppakken: (bewijsId: string) => void
 }
 
-export default function Stukken({ stukken, toestand, bijOppakken }: Props) {
+export default function Stukken({ stukken, toestand, wijzer, bijOppakken }: Props) {
   const [open, zetOpen] = useState<string | null>(null)
   const stuk = stukken.find((s) => s.id === open)
 
@@ -41,7 +43,10 @@ export default function Stukken({ stukken, toestand, bijOppakken }: Props) {
       <ul className="lijst">
         {stukken.map((s) => (
           <li key={s.id}>
-            <button className="lijstregel" onClick={() => zetOpen(s.id)}>
+            <button
+              className={"lijstregel" + (wijzer.stukken.includes(s.id) ? " wijst" : "")}
+              onClick={() => zetOpen(s.id)}
+            >
               <span className="rondje">{TEKENS[s.soort] ?? '📄'}</span>
               <span className="lijsttekst">
                 <span className="lijsttitel">{s.titel}</span>

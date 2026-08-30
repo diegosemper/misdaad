@@ -10,6 +10,7 @@ import {
   verbind,
   vordering,
 } from '../engine/zaak.ts'
+import { wijzer as berekenWijzer } from '../engine/wijzer.ts'
 import Telefoon from '../ui/Telefoon'
 import Prikbord from '../ui/Prikbord'
 import Takenlijst from '../ui/Takenlijst'
@@ -76,6 +77,7 @@ export default function Spelen({
   }
 
   const laag = huidigeLaag(hoofdstuk, toestand)
+  const wijzer = berekenWijzer(hoofdstuk, toestand)
   const magWijzen = magBeschuldigen(hoofdstuk, toestand)
 
   return (
@@ -106,13 +108,21 @@ export default function Spelen({
 
       <nav className="tabs">
         <button
-          className={'tab' + (tab === 'telefoon' ? ' aan' : '')}
+          className={
+            'tab' +
+            (tab === 'telefoon' ? ' aan' : '') +
+            (wijzer.apps.length > 0 && tab !== 'telefoon' ? ' wijst' : '')
+          }
           onClick={() => zetTab('telefoon')}
         >
           Werkomgeving
         </button>
         <button
-          className={'tab' + (tab === 'bord' ? ' aan' : '')}
+          className={
+            'tab' +
+            (tab === 'bord' ? ' aan' : '') +
+            (wijzer.bord && tab !== 'bord' ? ' wijst' : '')
+          }
           onClick={() => zetTab('bord')}
         >
           Het bord
@@ -129,6 +139,7 @@ export default function Spelen({
           <Telefoon
             hoofdstuk={hoofdstuk}
             toestand={toestand}
+            wijzer={wijzer}
             bijOpenen={(id) => zetToestand(markeerGelezen(toestand, id))}
             bijOppakken={(id) => verwerk(pakOp(hoofdstuk, toestand, id))}
             bijKraken={(slotId, code) => {

@@ -79,7 +79,10 @@ makkelijk, verbanden leggen is het werk.
 | 5 | De achtentachtig minuten | één telefoon ging die nacht uit |
 
 Er staat altijd precies één opdracht op het scherm; is die af, dan komt de
-volgende. Daardoor doet de volgorde in `src/verhaal/h1/taken.ts` ertoe, en
+volgende. Een kloppend amber stipje wijst waar je moet kijken:
+de app, en daarbinnen het gesprek of het stuk. Ligt alles al op je bord, dan
+klopt het bord -- maar nooit de twee kaartjes die bij elkaar horen, want dat is
+de puzzel. Zie `src/engine/wijzer.ts`. Daardoor doet de volgorde in `src/verhaal/h1/taken.ts` ertoe, en
 `npm run controleer` kijkt na of elke opdracht te doen is op het moment dat hij
 verschijnt.
 

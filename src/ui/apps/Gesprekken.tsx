@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Gesprek, Hoofdstuk } from '../../verhaal/types.ts'
 import type { Toestand } from '../../engine/zaak.ts'
+import type { Wijzer } from '../../engine/wijzer.ts'
 import { persoon } from '../../verhaal/h1/personen.ts'
 
 /* De chat-app. Twee weergaven: de lijst met gesprekken, en één gesprek
@@ -14,6 +15,7 @@ type Props = {
   hoofdstuk: Hoofdstuk
   toestand: Toestand
   gesprekken: Gesprek[]
+  wijzer: Wijzer
   bijOpenen: (gesprekId: string) => void
   bijOppakken: (bewijsId: string) => void
 }
@@ -22,6 +24,7 @@ export default function Gesprekken({
   hoofdstuk,
   toestand,
   gesprekken,
+  wijzer,
   bijOpenen,
   bijOppakken,
 }: Props) {
@@ -36,7 +39,9 @@ export default function Gesprekken({
           return (
             <li key={g.id}>
               <button
-                className="lijstregel"
+                className={
+                  "lijstregel" + (wijzer.gesprekken.includes(g.id) ? " wijst" : "")
+                }
                 onClick={() => {
                   zetOpen(g.id)
                   bijOpenen(g.id)

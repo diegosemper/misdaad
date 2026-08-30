@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Hoofdstuk } from '../verhaal/types.ts'
 import type { Toestand } from '../engine/zaak.ts'
+import type { Wijzer } from '../engine/wijzer.ts'
 import Gesprekken from './apps/Gesprekken'
 import Stukken from './apps/Stukken'
 import Codeslot from './Codeslot'
@@ -15,6 +16,7 @@ import Codeslot from './Codeslot'
 type Props = {
   hoofdstuk: Hoofdstuk
   toestand: Toestand
+  wijzer: Wijzer
   bijOpenen: (gesprekId: string) => void
   bijOppakken: (bewijsId: string) => void
   bijKraken: (slotId: string, code: string) => boolean
@@ -23,6 +25,7 @@ type Props = {
 export default function Telefoon({
   hoofdstuk,
   toestand,
+  wijzer,
   bijOpenen,
   bijOppakken,
   bijKraken,
@@ -40,7 +43,11 @@ export default function Telefoon({
           {zichtbaar.map((a) => {
             const opSlot = a.slot !== undefined && !toestand.gekraakt.includes(a.slot)
             return (
-              <button key={a.id} className="appknop" onClick={() => zetOpenApp(a.id)}>
+              <button
+                key={a.id}
+                className={"appknop" + (wijzer.apps.includes(a.id) ? " wijst" : "")}
+                onClick={() => zetOpenApp(a.id)}
+              >
                 <span className="apppictogram" aria-hidden="true">
                   {opSlot ? '🔒' : a.teken}
                 </span>
@@ -76,6 +83,7 @@ export default function Telefoon({
         <Gesprekken
           hoofdstuk={hoofdstuk}
           toestand={toestand}
+          wijzer={wijzer}
           gesprekken={hoofdstuk.gesprekken.filter(
             (g) => g.app === app.id && toestand.beschikbaar.includes(g.id),
           )}
@@ -84,6 +92,7 @@ export default function Telefoon({
         />
       ) : (
         <Stukken
+          wijzer={wijzer}
           stukken={hoofdstuk.bewijs.filter(
             (b) => b.app === app.id && toestand.beschikbaar.includes(b.id),
           )}
