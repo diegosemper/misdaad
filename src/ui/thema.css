@@ -1653,11 +1653,50 @@ p {
   gap: 5px;
 }
 
-.beeld-foto {
+/* Echt beeldmateriaal: een foto of een videoclip uit public/bewijs/.
+   Het kader is hetzelfde als bij de getekende scènes, zodat een dossier
+   waarin het half vervangen is er niet uit gaat zien als twee spellen
+   door elkaar. */
+
+.mediavlak {
+  position: relative;
+  border: 1px solid #4a443a;
+  background: #05070a;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.beeld-foto,
+.beeld-video {
   display: block;
   width: 100%;
-  border: 1px solid #6d6552;
-  background: #14120f;
+  height: auto;
+}
+
+/* Camerabeeld krijgt de tijdcode eroverheen, ook als het een echte clip
+   is. Dan hoeft die tekst niet in het bestand gebrand te worden, en ziet
+   elk aangeleverd fragment er meteen uit als dossiermateriaal. */
+
+.mediavlak.camera {
+  filter: grayscale(0.85) contrast(1.12) brightness(0.92);
+}
+
+.camerastempel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  pointer-events: none;
+  font-family: var(--schrift-vast);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #d7dee2;
+  text-shadow: 0 1px 3px #000;
+  line-height: 1.4;
 }
 
 .beeld-tijd {

@@ -5,45 +5,131 @@ import { BEELDEN, SchermJoost } from './beelden'
 /* ─────────────────────────────────────────────────────────────
    BEELDMATERIAAL
 
-   Drie mogelijkheden, in deze volgorde:
+   Vier mogelijkheden, in deze volgorde. De eerste die er is, wint.
 
-   1. Staat er een echt bestand als public/bewijs/<id>.jpg, dan wint dat.
-      Er hoeft niets in de code te veranderen om er een toe te voegen.
-   2. Is er een getekende scène voor dit bewijsstuk (zie beelden.tsx),
-      dan zie je die. Dat geldt voor alle vijf de beelden in hoofdstuk 1.
-   3. Anders een beeldkaart met de bron en de tijdcode erop -- voor
-      nieuwe bewijsstukken die nog geen tekening hebben.
+   1. public/bewijs/<id>.mp4   — een echte videoclip
+   2. public/bewijs/<id>.jpg   — een echte foto (of .png)
+   3. een getekende scène uit beelden.tsx
+   4. een kale beeldkaart met alleen de bron en de tijdcode
 
-   Punt 1 en 2 door elkaar heen kan: je kunt de scènes een voor een
-   vervangen door echte foto's zonder dat er iets stukgaat.
+   Zo kan echt beeldmateriaal er stuk voor stuk in zonder dat er ooit
+   iets kapotgaat: wat er niet is, valt terug op de laag eronder.
+
+   Waarom niet gewoon een bestand aanroepen en klaar? Omdat we pas weten
+   of het er is als de browser het geprobeerd heeft. Vandaar dat we het
+   materiaal eerst stilletjes laden en pas daarna kiezen wat we tonen --
+   anders knippert de tekening even in beeld voordat de foto hem
+   overneemt.
+
+   Bij camerabeeld leggen we de tijdcode over de video heen, ook als het
+   een echte clip is. Dan ziet elk aangeleverd fragment eruit als een
+   uitdraai uit het dossier, zonder dat je die tekst in het bestand hoeft
+   te branden.
    ───────────────────────────────────────────────────────────── */
 
-function pad(id: string): string {
-  return `${import.meta.env.BASE_URL}bewijs/${id}.jpg`
+type Soort = 'zoekt' | 'video' | 'foto' | 'geen'
+
+function url(id: string, ext: string): string {
+  return `${import.meta.env.BASE_URL}bewijs/${id}.${ext}`
+}
+
+/** Bestaat dit bestand? Eén keer proberen te laden, meer is het niet. */
+function laadt(adres: string, video: boolean): Promise<boolean> {
+  return new Promise((klaar) => {
+    if (video) {
+      const el = document.createElement('video')
+      el.preload = 'metadata'
+      el.onloadedmetadata = () => klaar(true)
+      el.onerror = () => klaar(false)
+      el.src = adres
+    } else {
+      const el = new Image()
+      el.onload = () => klaar(true)
+      el.onerror = () => klaar(false)
+      el.src = adres
+    }
+  })
 }
 
 export default function Beeld({ stuk }: { stuk: Bewijs }) {
-  const [staat, zetStaat] = useState<'zoekt' | 'ja' | 'nee'>('zoekt')
+  const [soort, zetSoort] = useState<Soort>('zoekt')
+  const [adres, zetAdres] = useState<string | null>(null)
 
   useEffect(() => {
     let levend = true
-    const beeld = new Image()
-    beeld.onload = () => levend && zetStaat('ja')
-    beeld.onerror = () => levend && zetStaat('nee')
-    beeld.src = pad(stuk.id)
+    zetSoort('zoekt')
+    zetAdres(null)
+
+    async function zoek() {
+      const mp4 = url(stuk.id, 'mp4')
+      if (await laadt(mp4, true)) {
+        if (!levend) return
+        zetAdres(mp4)
+        zetSoort('video')
+        return
+      }
+      for (const ext of ['jpg', 'png']) {
+        const beeld = url(stuk.id, ext)
+        if (await laadt(beeld, false)) {
+          if (!levend) return
+          zetAdres(beeld)
+          zetSoort('foto')
+          return
+        }
+      }
+      if (levend) zetSoort('geen')
+    }
+
+    void zoek()
     return () => {
       levend = false
-      beeld.onload = null
-      beeld.onerror = null
     }
   }, [stuk.id])
 
   const stempel = [stuk.dag, stuk.tijd].filter(Boolean).join('  ')
+  const isCamera = /camera|beveiliging/i.test(stuk.bron + stuk.titel)
 
-  if (staat === 'ja') {
+  if (soort === 'video' && adres) {
     return (
       <figure className="beeld">
-        <img className="beeld-foto" src={pad(stuk.id)} alt={stuk.titel} />
+        <div className={'mediavlak' + (isCamera ? ' camera' : '')}>
+          <video
+            className="beeld-video"
+            src={adres}
+            autoPlay
+            loop
+            muted
+            playsInline
+            controls
+          />
+          {isCamera && (
+            <span className="camerastempel" aria-hidden="true">
+              <span>CAM 02 — VAN ELST</span>
+              <span>
+                {stuk.dag} {stuk.tijd}
+              </span>
+            </span>
+          )}
+        </div>
+        {stempel && <figcaption className="beeld-tijd">{stempel}</figcaption>}
+      </figure>
+    )
+  }
+
+  if (soort === 'foto' && adres) {
+    return (
+      <figure className="beeld">
+        <div className={'mediavlak' + (isCamera ? ' camera' : '')}>
+          <img className="beeld-foto" src={adres} alt={stuk.titel} />
+          {isCamera && (
+            <span className="camerastempel" aria-hidden="true">
+              <span>CAM 02 — VAN ELST</span>
+              <span>
+                {stuk.dag} {stuk.tijd}
+              </span>
+            </span>
+          )}
+        </div>
         {stempel && <figcaption className="beeld-tijd">{stempel}</figcaption>}
       </figure>
     )
@@ -67,9 +153,6 @@ export default function Beeld({ stuk }: { stuk: Bewijs }) {
       </figure>
     )
   }
-
-  // Nog geen tekening voor dit stuk: dan de kale beeldkaart.
-  const isCamera = /camera|beveiliging/i.test(stuk.bron + stuk.titel)
 
   return (
     <div className={'beeldkaart' + (isCamera ? ' camera' : '')}>

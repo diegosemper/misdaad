@@ -108,9 +108,12 @@ dan wint dat van de tekening.
 | Zet neer als | Wat het wordt |
 |---|---|
 | `public/gang.jpg` | de achtergrond van het opstartscherm |
-| `public/bewijs/<bewijs-id>.jpg` | het beeld bij dat bewijsstuk |
+| `public/bewijs/<bewijs-id>.jpg` | de foto bij dat bewijsstuk |
+| `public/bewijs/<bewijs-id>.mp4` | een videoclip; gaat vóór de foto |
 
-Welke bewijs-id's beeld kunnen krijgen staat in `public/bewijs/LEESMIJ.txt`.
+Welke bewijs-id's beeld kunnen krijgen staat in `public/bewijs/LEESMIJ.txt`, en
+in [beeldopdrachten.md](beeldopdrachten.md) staat per beeld een kant-en-klare
+opdracht voor een beeldgenerator.
 
 Er hoeft niets in de code te veranderen: de app probeert het bestand te laden
 en valt terug op de getekende versie als het er niet is. Je kunt ze dus een

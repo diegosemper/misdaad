@@ -20,8 +20,16 @@ zonder bestand krijgt een beeldkaart met alleen de bron en de tijdcode.
 De beschrijving in src/verhaal/h1/bewijs.ts blijft altijd onder het beeld
 staan. Die vertelt wat je moet zien; het beeld is de sfeer eromheen.
 
-Alleen .jpg. Houd ze klein (onder de 300 kB per stuk) -- dit wordt op
-telefoons gespeeld, vaak over mobiel internet.
+Video kan ook: <id>.mp4 gaat voor een foto met dezelfde naam. Hij speelt
+automatisch, in herhaling, zonder geluid. Bij camerabeeld legt de app de
+tijdcode er zelf overheen en maakt het beeld zwart-wit, dus dat hoeft niet
+in het bestand gebrand te worden.
+
+.jpg, .png of .mp4. Houd ze klein (onder de 300 kB per foto, 3 MB per
+video) -- dit wordt op telefoons gespeeld, vaak over mobiel internet.
+
+Kant-en-klare opdrachten voor een beeldgenerator staan in
+beeldopdrachten.md in de hoofdmap.
 
 De achtergrondfoto van het opstartscherm hoort een map hoger:
 public/gang.jpg
