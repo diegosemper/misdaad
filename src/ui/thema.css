@@ -1299,8 +1299,15 @@ p {
   color: var(--amber);
 }
 
-.opdrachtteller {
+.opdrachtknoppen {
   flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.opdrachtknop {
   appearance: none;
   background: transparent;
   border: 1px solid var(--rand-zacht);
@@ -1310,11 +1317,64 @@ p {
   font-size: 11px;
   padding: 3px 9px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
-.opdrachtteller:hover {
+.opdrachtknop:hover:not(:disabled) {
   color: var(--tekst-zacht);
   border-color: var(--rand);
+}
+
+.opdrachtknop.hint {
+  color: var(--amber);
+  border-color: var(--amber-donker);
+}
+
+.opdrachtknop.hint:hover:not(:disabled) {
+  color: var(--amber);
+  border-color: var(--amber);
+  background: rgba(230, 169, 76, 0.08);
+}
+
+.opdrachtknop:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* De hints zelf. Genummerd, want dan zie je dat er nog een volgende is
+   en hoe diep je al gegraven hebt. */
+
+.hintlijst {
+  list-style: none;
+  margin: 0;
+  padding: 0 16px 13px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hintregel {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--tekst-zacht);
+  animation: opdrachtin 0.3s ease-out both;
+}
+
+.hintnummer {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--amber-donker);
+  color: var(--amber);
+  font-family: var(--schrift-vast);
+  font-size: 10px;
+  display: grid;
+  place-items: center;
 }
 
 .gedaanlijst {
@@ -2133,7 +2193,6 @@ p {
 /* ── Het bord ───────────────────────────────────────────────── */
 
 .bord {
-  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 14px;
@@ -2146,24 +2205,90 @@ p {
   min-height: 160px;
 }
 
-.draden {
+/* Een gekoppeld kaartje blijft staan, maar gedempt en met een vinkje.
+   Zo zie je in één oogopslag wat er nog los ligt -- en het blijft
+   aanklikbaar, want de meeste stukken horen bij meer dan één verband. */
+
+.kaartje.gebruikt {
+  opacity: 0.46;
+  border-style: dashed;
+}
+
+.kaartje.gebruikt:hover {
+  opacity: 0.8;
+}
+
+.kaartvink {
+  float: right;
+  color: var(--groen);
+}
+
+/* ── Gelegde verbanden ─────────────────────────────────────
+   Twee kaartjes naast elkaar met een streepje ertussen, en de
+   conclusie eronder. Hier hingen eerst echte draadjes kriskras over
+   het bord; dat was mooi bij drie verbanden en onleesbaar bij tien. */
+
+.koppelingen {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.koppel {
+  border: 1px solid var(--rand-zacht);
+  border-left: 3px solid var(--rood);
+  border-radius: var(--straal-klein);
+  background: var(--vlak);
+  overflow: hidden;
+}
+
+.koppelpaar {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 10px 12px 0;
+}
+
+.koppelpaar .kaartje.klein {
+  flex: 1;
+  min-width: 0;
+  box-shadow: none;
+  background: var(--vlak-diep);
+}
+
+.koppeldraad {
+  flex: none;
+  align-self: center;
+  width: 22px;
+  height: 2px;
+  background: var(--rood);
+  position: relative;
+}
+
+.koppeldraad::before,
+.koppeldraad::after {
+  content: '';
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
+  top: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rood);
 }
 
-.draad {
-  stroke: var(--rood);
-  stroke-width: 1.5;
-  opacity: 0.55;
+.koppeldraad::before {
+  left: -2px;
 }
 
-.draad.op {
-  stroke-width: 3;
-  opacity: 1;
+.koppeldraad::after {
+  right: -2px;
+}
+
+.koppeltekst {
+  padding: 11px 14px 13px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--tekst-zacht);
 }
 
 .kaartje {
@@ -2196,6 +2321,15 @@ p {
   border-color: var(--rood);
 }
 
+.kaartje.klein {
+  padding: 9px 10px;
+  gap: 3px;
+}
+
+.kaartje.klein .kaarttitel {
+  font-size: 12px;
+}
+
 .kaartsoort {
   font-family: var(--schrift-vast);
   font-size: 9px;
@@ -2213,33 +2347,6 @@ p {
 .kaartbron {
   font-size: 11px;
   color: var(--tekst-flauw);
-}
-
-.conclusies {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.conclusie {
-  appearance: none;
-  text-align: left;
-  background: var(--vlak);
-  border: 1px solid var(--rand-zacht);
-  border-left: 3px solid var(--rood);
-  border-radius: var(--straal-klein);
-  color: var(--tekst-zacht);
-  font-family: inherit;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 12px 14px;
-  cursor: pointer;
-}
-
-.conclusie.op,
-.conclusie:hover {
-  color: var(--tekst);
-  background: var(--vlak-hoog);
 }
 
 /* ── Briefjes (de meldingen onderin) ────────────────────────── */

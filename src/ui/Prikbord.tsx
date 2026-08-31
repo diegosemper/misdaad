@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { Hoofdstuk, Verband } from '../verhaal/types.ts'
 import type { Toestand } from '../engine/zaak.ts'
 
@@ -9,22 +9,23 @@ import type { Toestand } from '../engine/zaak.ts'
    twee kaartjes een kwelling; twee keer tikken werkt met een muis én met
    een duim, en je kunt er niet per ongeluk naast zitten.
 
-   De draadjes zijn echte lijnen in een SVG-laag áchter de kaartjes. De
-   posities meten we op na elke layout, want de kaartjes zitten in een
-   gewoon raster dat meebeweegt met de breedte van het scherm. Zonder die
-   hermeting hangen de draadjes na het draaien van je telefoon in de
-   lucht.
+   Hier stonden eerst echte draadjes: een SVG-laag die lijnen trok tussen
+   de kaartjes waar ze ook lagen. Dat zag er goed uit bij drie verbanden
+   en werd bij tien een wirwar waarin je niets meer kon aflezen -- en dat
+   is precies het omgekeerde van waar een prikbord voor is.
 
-   Let op bij het aanpassen van `meet`: hij hangt uitsluitend aan
-   `toestand.gelegd` en `toestand.verzameld`, en dat zijn arrays die
-   alleen van identiteit veranderen als er echt iets bijkomt. Hier stond
-   eerst een afgeleide lijst die elke render opnieuw werd gemaakt, en dat
-   leverde precies één ding op: meet werd elke render een nieuwe functie,
-   de layout-effect draaide elke render, zette nieuwe lijnen, en dat gaf
-   weer een render. Oneindige lus, React eruit, zwart scherm.
+   Nu ligt het in twee delen:
+
+   · Bovenaan al je bewijs, met de nog niet gekoppelde stukken vóóraan en
+     de gebruikte erachter, gedempt en met een vinkje. In één oogopslag
+     zie je wat er nog los ligt.
+   · Daaronder elk gelegd verband als een paar naast elkaar, met de
+     conclusie eronder. Geen kruisende lijnen meer, want er is per
+     verband maar één streepje van tien pixels nodig.
+
+   Een gebruikt kaartje blijft aanklikbaar: veel stukken horen bij meer
+   dan één verband, en dan moet je er nog een keer bij kunnen.
    ───────────────────────────────────────────────────────────── */
-
-type Lijn = { id: string; x1: number; y1: number; x2: number; y2: number }
 
 type Props = {
   hoofdstuk: Hoofdstuk
@@ -32,24 +33,8 @@ type Props = {
   bijVerbinden: (a: string, b: string) => void
 }
 
-/** Zijn dit dezelfde draadjes op dezelfde plek? Scheelt een render. */
-function zelfde(a: Lijn[], b: Lijn[]): boolean {
-  if (a.length !== b.length) return false
-  return a.every((l, i) => {
-    const m = b[i]
-    return (
-      l.id === m.id && l.x1 === m.x1 && l.y1 === m.y1 && l.x2 === m.x2 && l.y2 === m.y2
-    )
-  })
-}
-
 export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
   const [gekozen, zetGekozen] = useState<string | null>(null)
-  const [opgelicht, zetOpgelicht] = useState<string | null>(null)
-  const [lijnen, zetLijnen] = useState<Lijn[]>([])
-
-  const bord = useRef<HTMLDivElement>(null)
-  const kaarten = useRef<Record<string, HTMLElement | null>>({})
 
   const stukken = toestand.verzameld
     .map((id) => hoofdstuk.bewijs.find((b) => b.id === id))
@@ -59,45 +44,9 @@ export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
     .map((id) => hoofdstuk.verbanden.find((v) => v.id === id))
     .filter((v): v is Verband => v !== undefined)
 
-  /** Meet waar elk draadje moet lopen, in coördinaten van het bord zelf. */
-  const meet = useCallback(() => {
-    const doos = bord.current?.getBoundingClientRect()
-    if (!doos) return
-
-    const nieuw: Lijn[] = []
-    for (const id of toestand.gelegd) {
-      const v = hoofdstuk.verbanden.find((x) => x.id === id)
-      if (!v) continue
-      const a = kaarten.current[v.van]
-      const b = kaarten.current[v.naar]
-      if (!a || !b) continue
-      const ka = a.getBoundingClientRect()
-      const kb = b.getBoundingClientRect()
-      nieuw.push({
-        id: v.id,
-        x1: ka.left - doos.left + ka.width / 2,
-        y1: ka.top - doos.top + ka.height / 2,
-        x2: kb.left - doos.left + kb.width / 2,
-        y2: kb.top - doos.top + kb.height / 2,
-      })
-    }
-
-    zetLijnen((oud) => (zelfde(oud, nieuw) ? oud : nieuw))
-  }, [hoofdstuk, toestand.gelegd])
-
-  useLayoutEffect(meet, [meet, toestand.verzameld])
-
-  useEffect(() => {
-    const vlak = bord.current
-    if (!vlak) return
-    const kijker = new ResizeObserver(meet)
-    kijker.observe(vlak)
-    window.addEventListener('resize', meet)
-    return () => {
-      kijker.disconnect()
-      window.removeEventListener('resize', meet)
-    }
-  }, [meet])
+  const gebruikt = new Set(gelegd.flatMap((v) => [v.van, v.naar]))
+  const los = stukken.filter((s) => !gebruikt.has(s.id))
+  const vast = stukken.filter((s) => gebruikt.has(s.id))
 
   function tik(id: string) {
     if (gekozen === null) {
@@ -110,6 +59,30 @@ export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
     }
     bijVerbinden(gekozen, id)
     zetGekozen(null)
+  }
+
+  function kaartje(b: (typeof stukken)[number], klein = false) {
+    return (
+      <button
+        key={b.id + (klein ? '-klein' : '')}
+        className={
+          'kaartje' +
+          (klein ? ' klein' : '') +
+          (gekozen === b.id ? ' gekozen' : '') +
+          (!klein && gebruikt.has(b.id) ? ' gebruikt' : '')
+        }
+        onClick={() => tik(b.id)}
+      >
+        <span className="kaartsoort">
+          {b.soort}
+          {!klein && gebruikt.has(b.id) && <span className="kaartvink">✓</span>}
+        </span>
+        <span className="kaarttitel">{b.titel}</span>
+        <span className="kaartbron">
+          {[b.dag, b.tijd].filter(Boolean).join(' · ') || b.bron}
+        </span>
+      </button>
+    )
   }
 
   if (stukken.length === 0) {
@@ -127,7 +100,8 @@ export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
   return (
     <div className="paneel">
       <p className="paneelkop">
-        Het bord · {stukken.length} stukken, {gelegd.length} verbanden
+        Het bord · {los.length} nog te koppelen, {gelegd.length}{' '}
+        {gelegd.length === 1 ? 'verband' : 'verbanden'}
       </p>
       <p className="paneelvoet boven">
         {gekozen
@@ -135,61 +109,36 @@ export default function Prikbord({ hoofdstuk, toestand, bijVerbinden }: Props) {
           : 'Tik twee kaartjes aan om te kijken of ze iets met elkaar te maken hebben.'}
       </p>
 
-      <div className="bord" ref={bord}>
-        <svg className="draden" aria-hidden="true">
-          {lijnen.map((l) => (
-            <line
-              key={l.id}
-              x1={l.x1}
-              y1={l.y1}
-              x2={l.x2}
-              y2={l.y2}
-              className={opgelicht === l.id ? 'draad op' : 'draad'}
-            />
-          ))}
-        </svg>
-
-        {stukken.map((b) => (
-          <button
-            key={b.id}
-            ref={(el) => {
-              kaarten.current[b.id] = el
-            }}
-            className={
-              'kaartje' +
-              (gekozen === b.id ? ' gekozen' : '') +
-              (opgelicht &&
-              gelegd.some(
-                (v) => v.id === opgelicht && (v.van === b.id || v.naar === b.id),
-              )
-                ? ' op'
-                : '')
-            }
-            onClick={() => tik(b.id)}
-          >
-            <span className="kaartsoort">{b.soort}</span>
-            <span className="kaarttitel">{b.titel}</span>
-            <span className="kaartbron">
-              {[b.dag, b.tijd].filter(Boolean).join(' · ') || b.bron}
-            </span>
-          </button>
-        ))}
+      <div className="bord">
+        {los.map((b) => kaartje(b))}
+        {vast.map((b) => kaartje(b))}
       </div>
 
+      {los.length === 0 && vast.length > 0 && (
+        <p className="paneelvoet">
+          Alles op je bord is ergens aan gekoppeld. Meestal hoort een stuk bij meer
+          dan één verband, dus je kunt gerust nog eens iets aantikken.
+        </p>
+      )}
+
       {gelegd.length > 0 && (
-        <div className="conclusies">
+        <div className="koppelingen">
           <h3>Wat je nu weet</h3>
-          {gelegd.map((v) => (
-            <button
-              key={v.id}
-              className={'conclusie' + (opgelicht === v.id ? ' op' : '')}
-              onMouseEnter={() => zetOpgelicht(v.id)}
-              onMouseLeave={() => zetOpgelicht(null)}
-              onClick={() => zetOpgelicht(opgelicht === v.id ? null : v.id)}
-            >
-              {v.conclusie}
-            </button>
-          ))}
+          {gelegd.map((v) => {
+            const a = hoofdstuk.bewijs.find((b) => b.id === v.van)
+            const b = hoofdstuk.bewijs.find((x) => x.id === v.naar)
+            if (!a || !b) return null
+            return (
+              <div key={v.id} className="koppel">
+                <div className="koppelpaar">
+                  {kaartje(a, true)}
+                  <span className="koppeldraad" aria-hidden="true" />
+                  {kaartje(b, true)}
+                </div>
+                <p className="koppeltekst">{v.conclusie}</p>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
